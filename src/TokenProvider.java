@@ -46,6 +46,10 @@ public class TokenProvider {
         return this.wordQueue.poll();
     }
 
+    public boolean hasNextWord() {
+        return !this.wordQueue.isEmpty();
+    }
+
     /**
      * Resets the ConcurrentLinkedQueue held in wordQueue
      * 
