@@ -1,3 +1,5 @@
+package src;
+
 import java.util.Scanner;
 
 public class Main {
@@ -6,6 +8,7 @@ public class Main {
 
         try (Scanner input = new Scanner(System.in)) {
             String filePath = input.nextLine();
+            
 
         } catch (Exception e) {
             // TODO: handle exception

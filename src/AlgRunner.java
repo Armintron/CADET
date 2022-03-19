@@ -1,3 +1,5 @@
+package src;
+
 import java.util.concurrent.ConcurrentHashMap;
 import info.debatty.java.stringsimilarity.interfaces.*;
 import info.debatty.java.stringsimilarity.*;
