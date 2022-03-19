@@ -1,12 +1,41 @@
 package src;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 import info.debatty.java.stringsimilarity.interfaces.*;
 import info.debatty.java.stringsimilarity.*;
 
 public class AlgRunner implements Runnable {
 
-    ConcurrentHashMap<String, Double> scoreMap;
+    static class WordScoreEntry implements Comparable<WordScoreEntry> {
+        String word;
+        Double score;
+
+        public WordScoreEntry(String word, Double score) {
+            this.word = word;
+            this.score = score;
+        }
+
+        public String toString() {
+
+            return "Word: " + word + "\t|\tScore: " + score;
+        }
+
+        @Override
+        public int compareTo(WordScoreEntry o) {
+            int scoreCmp = (int) (this.score - o.score);
+            if (scoreCmp != 0) {
+                return scoreCmp;
+            } else {
+                return this.word.compareTo(o.word);
+            }
+
+        }
+
+    }
+
+    ConcurrentSkipListSet<WordScoreEntry> scoreMap;
     MetricStringDistance alg;
     TokenProvider provider;
     String searchWord;
@@ -19,17 +48,26 @@ public class AlgRunner implements Runnable {
      */
     public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord) {
         Levenshtein l = new Levenshtein();
-        this.scoreMap = new ConcurrentHashMap<>();
+        this.scoreMap = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
+        this.provider = provider;
+        this.alg = msd;
 
     }
 
     @Override
     public void run() {
         while (provider.hasNextWord()) {
-            String cur = provider.getWord();
+            String cur = null;
+            while (cur == null) {
+                // List is now Empty
+                if (!provider.hasNextWord()) {
+                    return;
+                }
+                cur = provider.getWord();
+            }
             Double score = alg.distance(searchWord, cur);
-            scoreMap.put(cur, score);
+            scoreMap.add(new WordScoreEntry(cur, score));
 
         }
     }
