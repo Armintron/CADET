@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import info.debatty.java.stringsimilarity.interfaces.MetricStringDistance;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
+import src.corpi.CorpusProvider;
 
 import java.awt.*;
 import java.net.URL;
@@ -28,13 +29,16 @@ public class DropDownHandler {
             "WeightedLevenshtein",
     };
     public static String[] CORPI_OPTIONS = { "Bee Movie" };
-    protected JComboBox algComboBox = null;
-    protected JComboBox corpusComboBox = null;
+    protected final JComboBox algComboBox = new JComboBox<>(ALG_OPTIONS);
+    protected final JComboBox corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
 
     public DropDownHandler() {
 
-        this.corpusComboBox = new JComboBox<String>(CORPI_OPTIONS);
-        this.algComboBox = new JComboBox<String>(ALG_OPTIONS);
+        corpusComboBox.addActionListener((e) -> {
+            int selected = algComboBox.getSelectedIndex();
+            GUI.setCorpusTextPanel(CorpusProvider.getCorpus(selected));
+
+        });
     }
 
     /**

@@ -2,7 +2,6 @@ package src.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -10,13 +9,13 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class GUI {
 
@@ -33,6 +32,7 @@ public class GUI {
     // Custom Class Instances
     protected static DropDownHandler connectionPanel;
     private static JTextArea corpusTextArea;
+    private static JTextField searchWordField;
     protected static DropDownHandler dropDownHandler = new DropDownHandler();
 
     public GUI() {
@@ -51,7 +51,6 @@ public class GUI {
 
         // Center Text Box
         frame.add(createCorpusTextPanel(), BorderLayout.CENTER);
-
         frame.add(createTopUI(), BorderLayout.NORTH);
 
         frame.pack();
@@ -63,7 +62,10 @@ public class GUI {
     private static JPanel createTopUI() {
         JPanel ret = new JPanel();
         ret.setLayout(new FlowLayout(FlowLayout.CENTER, BUTTON_HORIZONTAL_SPACING, BUTTON_VERTICAL_SPACING));
+        searchWordField = new JTextField("Search Word", FIELD_WIDTH);
+        searchWordField.setColumns(FIELD_WIDTH);
         ret.add(dropDownHandler.getAlgDropDown());
+        ret.add(searchWordField);
         return ret;
     }
 
@@ -74,11 +76,20 @@ public class GUI {
         corpusTextArea.setText("");
     }
 
+    /**
+     * Used to set Corpus Text Panel contents
+     * 
+     * @param s String to display on the Corpus Text Panel
+     */
+    public static void setCorpusTextPanel(String s) {
+        corpusTextArea.setText(s);
+    }
+
     private static JPanel bottomUI() {
         JPanel ret = new JPanel();
         ret.setLayout(new FlowLayout(FlowLayout.CENTER, BUTTON_HORIZONTAL_SPACING, BUTTON_VERTICAL_SPACING));
 
-        // Execute and Clear SQL Command Buttons
+        // Execute and Clear Command Buttons
         JButton executeButton = new JButton("Execute Search");
         executeButton.setBackground(Color.green);
         JButton clearButton = new JButton("Clear Text");
@@ -101,9 +112,6 @@ public class GUI {
         return ret;
     }
 
-    // Creates the top right command input panel
-    // Contains: 1 large text field, Clear Button, Send Command Button
-    // Probably best to create a border layout
     public JPanel createCorpusTextPanel() {
         JPanel ret = new JPanel();
         ret.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
