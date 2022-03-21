@@ -38,6 +38,7 @@ public class AlgRunner implements Runnable {
     ConcurrentSkipListSet<WordScoreEntry> scoreMap;
     MetricStringDistance alg;
     TokenProvider provider;
+    Phonetic phonetic;
     String searchWord;
 
     /**
@@ -47,12 +48,17 @@ public class AlgRunner implements Runnable {
      * @param searchWord Word to search for
      */
     public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord) {
+        this(msd, provider, searchWord, null);
+    }
+
+    public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord, Phonetic phonetic)
+    {
         Levenshtein l = new Levenshtein();
         this.scoreMap = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
         this.provider = provider;
         this.alg = msd;
-
+        this.phonetic = phonetic;
     }
 
     @Override
@@ -66,7 +72,14 @@ public class AlgRunner implements Runnable {
                 }
                 cur = provider.getWord();
             }
-            Double score = alg.distance(searchWord, cur);
+            Double score;
+            // encode words and then find score
+            if(phonetic != null)
+            {
+                score = alg.distance(phonetic.ToPhonetic(searchWord), phonetic.ToPhonetic(cur));
+            }
+            // find score for words without encoding
+            else score = alg.distance(searchWord, cur);
             scoreMap.add(new WordScoreEntry(cur, score));
 
         }
