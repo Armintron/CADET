@@ -4,13 +4,16 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Scanner;
 import info.debatty.java.stringsimilarity.*;
+import src.AlgRunner.WordScoreEntry;
 
 public class Main {
 
     public static void main(String[] args) {
 
         try (Scanner input = new Scanner(System.in)) {
-            File inFile = new File("corpi\\beemovie.txt");
+            // File inFile = new File("corpi\\beemovie.txt");
+            File inFile = new File("corpi/beemovie.txt");
+
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
             String searchWord;
@@ -31,7 +34,7 @@ public class Main {
 
     }
 
-    public static void outputScore(Iterator iterator) {
+    public static void outputScore(Iterator<WordScoreEntry> iterator) {
         System.out.println("Output:");
         for (int i = 0; i < 10; i++) {
             if (!iterator.hasNext()) {
