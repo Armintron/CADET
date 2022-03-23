@@ -37,6 +37,7 @@ public class AlgRunner implements Runnable {
 
     ConcurrentSkipListSet<WordScoreEntry> scoreMap;
     MetricStringDistance msd;
+    NormalizedStringDistance nsd;
     TokenProvider provider;
     String searchWord;
 
@@ -54,6 +55,14 @@ public class AlgRunner implements Runnable {
 
     }
 
+    public AlgRunner(NormalizedStringDistance nsd, TokenProvider provider, String searchWord) {
+        this.scoreMap = new ConcurrentSkipListSet<>();
+        this.searchWord = searchWord;
+        this.provider = provider;
+        this.nsd = nsd;
+
+    }
+
     @Override
     public void run() {
         while (provider.hasNextWord()) {
@@ -65,9 +74,14 @@ public class AlgRunner implements Runnable {
                 }
                 cur = provider.getWord();
             }
-            Double score = msd.distance(searchWord, cur);
 
-            scoreMap.add(new WordScoreEntry(cur, score));
+            if (nsd != null) {
+                Double score = nsd.distance(searchWord, cur);
+                scoreMap.add(new WordScoreEntry(cur, score));
+            } else {
+                Double score = msd.distance(searchWord, cur);
+                scoreMap.add(new WordScoreEntry(cur, score));
+            }
         }
     }
 

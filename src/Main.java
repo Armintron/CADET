@@ -16,6 +16,7 @@ public class Main {
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
             MetricLCS metricLCS = new MetricLCS();
+            JaroWinkler jaroWinkler = new JaroWinkler();
 
             String searchWord;
             do {
@@ -23,10 +24,10 @@ public class Main {
                 int numThread = input.nextInt();
                 System.out.println("Search Word:");
                 searchWord = input.next();
-                // AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
-                AlgRunner levenRunner = new AlgRunner(metricLCS, provider, searchWord);
-                startAndWaitForThreads(levenRunner, numThread);
-                outputScore(levenRunner.scoreMap.iterator());
+                AlgRunner algRunner = new AlgRunner(l, provider, searchWord);
+                // AlgRunner algRunner = new AlgRunner(jaroWinkler, provider, searchWord);
+                startAndWaitForThreads(algRunner, numThread);
+                outputScore(algRunner.scoreMap.iterator());
                 provider.restartIterator();
             } while (!searchWord.equalsIgnoreCase("EXIT"));
 
