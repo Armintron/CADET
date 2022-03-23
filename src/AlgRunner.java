@@ -1,8 +1,8 @@
 package src;
 
 import java.util.concurrent.ConcurrentSkipListSet;
+
 import info.debatty.java.stringsimilarity.interfaces.*;
-import info.debatty.java.stringsimilarity.*;
 
 public class AlgRunner implements Runnable {
 
@@ -22,11 +22,13 @@ public class AlgRunner implements Runnable {
 
         @Override
         public int compareTo(WordScoreEntry o) {
-            int scoreCmp = (int) (this.score - o.score);
-            if (scoreCmp != 0) {
-                return scoreCmp;
+            double scoreCmp = (this.score - o.score);
+            if (scoreCmp > 0) {
+                return 1;
+            } else if (scoreCmp < 0) {
+                return -1;
             } else {
-                return this.word.compareTo(o.word);
+                return 0;
             }
 
         }
@@ -34,7 +36,7 @@ public class AlgRunner implements Runnable {
     }
 
     ConcurrentSkipListSet<WordScoreEntry> scoreMap;
-    MetricStringDistance alg;
+    MetricStringDistance msd;
     TokenProvider provider;
     String searchWord;
 
@@ -45,11 +47,10 @@ public class AlgRunner implements Runnable {
      * @param searchWord Word to search for
      */
     public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord) {
-        Levenshtein l = new Levenshtein();
         this.scoreMap = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
         this.provider = provider;
-        this.alg = msd;
+        this.msd = msd;
 
     }
 
@@ -64,9 +65,9 @@ public class AlgRunner implements Runnable {
                 }
                 cur = provider.getWord();
             }
-            Double score = alg.distance(searchWord, cur);
-            scoreMap.add(new WordScoreEntry(cur, score));
+            Double score = msd.distance(searchWord, cur);
 
+            scoreMap.add(new WordScoreEntry(cur, score));
         }
     }
 

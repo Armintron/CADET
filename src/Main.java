@@ -7,7 +7,6 @@ import info.debatty.java.stringsimilarity.*;
 import src.AlgRunner.WordScoreEntry;
 
 public class Main {
-
     public static void main(String[] args) {
 
         try (Scanner input = new Scanner(System.in)) {
@@ -16,13 +15,16 @@ public class Main {
 
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
+            MetricLCS metricLCS = new MetricLCS();
+
             String searchWord;
             do {
                 System.out.println("How many Threads?");
                 int numThread = input.nextInt();
                 System.out.println("Search Word:");
                 searchWord = input.next();
-                AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
+                // AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
+                AlgRunner levenRunner = new AlgRunner(metricLCS, provider, searchWord);
                 startAndWaitForThreads(levenRunner, numThread);
                 outputScore(levenRunner.scoreMap.iterator());
                 provider.restartIterator();
@@ -42,7 +44,6 @@ public class Main {
             }
             System.out.println(iterator.next().toString());
         }
-
     }
 
     public static void startAndWaitForThreads(Runnable r, int num) {
