@@ -1,10 +1,10 @@
 package src.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -12,74 +12,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
+
+import info.debatty.java.stringsimilarity.interfaces.StringDistance;
+import src.AlgRunner;
+import src.Main;
+import src.ResultStats;
+import src.TokenProvider;
+import src.AlgRunner.WordScoreEntry;
 
 public class CorpusTextPanel {
-
-    private final static class CorpusDocumentFilter extends DocumentFilter {
-        private final StyledDocument styledDocument = CorpusTextPanel.getCorpusTextPane()
-                .getStyledDocument();
-        private final StyleContext styleContext = StyleContext.getDefaultStyleContext();
-
-        // Define the Different Color Groups
-        private final AttributeSet greenAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
-                StyleConstants.Foreground, Color.GREEN);
-        private final AttributeSet blackAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
-                StyleConstants.Foreground, Color.BLACK);
-        private final AttributeSet redAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
-                StyleConstants.Foreground, Color.RED);
-
-        Pattern[] patterns;
-
-        @Override
-        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
-                throws BadLocationException {
-            super.insertString(fb, offset, string, attr);
-            handleTextChanged();
-        }
-
-        private void handleTextChanged() {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    updateTextStyles();
-                }
-
-            });
-        }
-
-        private void updateTextStyles() {
-            // Clear existing styles
-            styledDocument.setCharacterAttributes(0, getCorpusTextPane().getText().length(), blackAttributeSet, true);
-
-            // TODO Maybe we can implement some more concurrency here?
-            for (Pattern pattern : patterns) {
-                Matcher matcher = pattern.matcher(getCorpusTextPane().getText());
-                while (matcher.find()) {
-                    // Change Color of found Words
-                    styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
-                            greenAttributeSet, false);
-                }
-            }
-
-        }
-
-        /**
-         * Used to reset the Patterns [] holding regex for each word category
-         * 
-         * TODO Implement Method
-         */
-        private void resetPatterns() {
-
-        }
-    }
 
     static JPanel corpusTextPanel = null;
     protected static JTextPane corpusTextPane = null;
@@ -137,4 +79,33 @@ public class CorpusTextPanel {
         corpusTextPane.setText(s);
     }
 
+    public static void executeCorpusSearch() {
+        String input = GUI.searchWordField.getText();
+        StringDistance alg = GUI.dropDownHandler.getSelectedAlg();
+        TokenProvider tp = new TokenProvider(corpusTextPane.getText());
+        AlgRunner runner = new AlgRunner(alg, tp, input);
+        Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
+        ResultStats stats = new ResultStats(runner.scoreMap);
+
+        Map<Integer, ArrayList<WordScoreEntry>> zscores = new HashMap<>();
+        for (int i = -1; i < 2; i++) {
+            zscores.put(i, new ArrayList<>());
+        }
+        // Get Word Distribution by Z-Score
+        for (WordScoreEntry entry : runner.scoreMap) {
+            int z = (int) stats.getZScore(entry.getScore());
+            // TODO Support -3 < Z < 3
+            if (z > 0) {
+                zscores.get(1).add(entry);
+            } else if (z < 0) {
+                zscores.get(-1).add(entry);
+            } else {
+                zscores.get(0).add(entry);
+            }
+        }
+        corpusDocumentFilter.resetPatterns(zscores, 1);
+
+        corpusDocumentFilter.handleTextChanged();
+
+    }
 }

@@ -8,9 +8,17 @@ import info.debatty.java.stringsimilarity.*;
 
 public class AlgRunner implements Runnable {
 
-    static class WordScoreEntry implements Comparable<WordScoreEntry> {
+    public static class WordScoreEntry implements Comparable<WordScoreEntry> {
         String word;
         Double score;
+
+        public String getWord() {
+            return word;
+        }
+
+        public Double getScore() {
+            return score;
+        }
 
         public WordScoreEntry(String word, Double score) {
             this.word = word;
@@ -35,8 +43,8 @@ public class AlgRunner implements Runnable {
 
     }
 
-    ConcurrentSkipListSet<WordScoreEntry> scoreMap;
-    MetricStringDistance alg;
+    public ConcurrentSkipListSet<WordScoreEntry> scoreMap;
+    StringDistance alg;
     TokenProvider provider;
     String searchWord;
 
@@ -46,7 +54,7 @@ public class AlgRunner implements Runnable {
      * @param provider   Token Provider for current corpus
      * @param searchWord Word to search for
      */
-    public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord) {
+    public AlgRunner(StringDistance msd, TokenProvider provider, String searchWord) {
         this.scoreMap = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
         this.provider = provider;

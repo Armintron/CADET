@@ -21,12 +21,14 @@ public class GUI {
     private static final int AREA_WIDTH = 40;// characters
     private static final int BUTTON_HORIZONTAL_SPACING = 10;
     private static final int BUTTON_VERTICAL_SPACING = 10;
+    // TODO Add thread picker UI element
+    protected static int NUM_THREADS = 8;
     private String APPLICATION_NAME = "CADET Fuzzy String Search";
     JFrame MAIN_WINDOW;
 
     // Custom Class Instances
     protected static DropDownHandler connectionPanel;
-    private static JTextField searchWordField;
+    protected static JTextField searchWordField;
     protected static DropDownHandler dropDownHandler = new DropDownHandler();
 
     public GUI() {
@@ -82,6 +84,11 @@ public class GUI {
 
             }
 
+        });
+
+        // Set Up Execute Action
+        executeButton.addActionListener((e) -> {
+            CorpusTextPanel.executeCorpusSearch();
         });
 
         ret.add(dropDownHandler.getCorpusDropDown());

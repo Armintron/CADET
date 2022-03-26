@@ -2,12 +2,26 @@ package src.gui;
 
 import javax.swing.JComboBox;
 
+import info.debatty.java.stringsimilarity.Cosine;
+import info.debatty.java.stringsimilarity.Damerau;
+import info.debatty.java.stringsimilarity.Jaccard;
+import info.debatty.java.stringsimilarity.JaroWinkler;
+import info.debatty.java.stringsimilarity.Levenshtein;
+import info.debatty.java.stringsimilarity.LongestCommonSubsequence;
+import info.debatty.java.stringsimilarity.MetricLCS;
+import info.debatty.java.stringsimilarity.NGram;
+import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
+import info.debatty.java.stringsimilarity.OptimalStringAlignment;
+import info.debatty.java.stringsimilarity.QGram;
+import info.debatty.java.stringsimilarity.RatcliffObershelp;
+import info.debatty.java.stringsimilarity.SorensenDice;
+import info.debatty.java.stringsimilarity.WeightedLevenshtein;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import src.corpi.CorpusProvider;
 
 public class DropDownHandler {
 
-    public static String[] ALG_OPTIONS = {
+    public final static String[] ALG_OPTIONS = {
             "Cosine",
             "Damerau",
             "Jaccard",
@@ -20,9 +34,22 @@ public class DropDownHandler {
             "OptimalStringAlignment",
             "QGram",
             "RatcliffObershelp",
-            "ShingleBased",
             "SorensenDice",
-            "WeightedLevenshtein",
+    };
+    private final static StringDistance[] ALGS = {
+            new Cosine(),
+            new Damerau(),
+            new Jaccard(),
+            new JaroWinkler(),
+            new Levenshtein(),
+            new LongestCommonSubsequence(),
+            new MetricLCS(),
+            new NGram(),
+            new NormalizedLevenshtein(),
+            new OptimalStringAlignment(),
+            new QGram(),
+            new RatcliffObershelp(),
+            new SorensenDice()
     };
     public static String[] CORPI_OPTIONS = { "Bee Movie" };
     protected final JComboBox<String> algComboBox = new JComboBox<>(ALG_OPTIONS);
@@ -60,7 +87,7 @@ public class DropDownHandler {
      */
     public StringDistance getSelectedAlg() {
         int index = algComboBox.getSelectedIndex();
-        return null;
+        return ALGS[index];
 
     }
 

@@ -42,6 +42,20 @@ public class TokenProvider {
 
     /**
      * 
+     * @param corpus String containing corpus
+     */
+    public TokenProvider(String corpus) {
+        this.words = new ArrayList<>();
+        for (String word : corpus.split(" ")) {
+            String cur = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
+            words.add(cur);
+        }
+        this.wordQueue = new ConcurrentLinkedQueue<>(words);
+
+    }
+
+    /**
+     * 
      * @return the next word in the wordQueue ConcurrentLinkedQueue
      */
     public String getWord() {
