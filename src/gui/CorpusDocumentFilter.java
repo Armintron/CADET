@@ -2,8 +2,10 @@ package src.gui;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,15 +23,24 @@ import src.AlgRunner.WordScoreEntry;
 final class CorpusDocumentFilter extends DocumentFilter {
     private final StyledDocument styledDocument = CorpusTextPanel.getCorpusTextPane()
             .getStyledDocument();
-    private final StyleContext styleContext = StyleContext.getDefaultStyleContext();
+    static private final StyleContext styleContext = StyleContext.getDefaultStyleContext();
 
     // Define the Different Color Groups
-    private final AttributeSet greenAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
+    static final AttributeSet greenAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
             StyleConstants.Foreground, Color.GREEN);
-    private final AttributeSet blackAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
+    static protected final AttributeSet blackAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
             StyleConstants.Foreground, Color.BLACK);
-    private final AttributeSet redAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
+    static protected final AttributeSet redAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
             StyleConstants.Foreground, Color.RED);
+
+    static final Map<Integer, AttributeSet> zscoreColorMap;
+    static {
+        Map<Integer, AttributeSet> map = new HashMap<>();
+        map.put(-1, greenAttributeSet);
+        map.put(0, blackAttributeSet);
+        map.put(1, redAttributeSet);
+        zscoreColorMap = Collections.unmodifiableMap(map);
+    }
 
     Map<Integer, Pattern> patterns = new HashMap<>();
 
@@ -49,20 +60,20 @@ final class CorpusDocumentFilter extends DocumentFilter {
                 blackAttributeSet, true);
 
         // TODO Maybe we can implement some more concurrency here?
-        Pattern pattern = patterns.get(-1);
-        Matcher matcher = pattern.matcher(CorpusTextPanel.getCorpusTextPane().getText());
-        while (matcher.find()) {
-            // Change Color of found Words
-            styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
-                    greenAttributeSet, false);
+        for (Entry<Integer, Pattern> e : patterns.entrySet()) {
+            Matcher matcher = e.getValue().matcher(CorpusTextPanel.getCorpusTextPane().getText());
+            while (matcher.find()) {
+                // Change Color of found Words
+                styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
+                        zscoreColorMap.get(e.getKey()), false);
+            }
+
         }
 
     }
 
     /**
-     * Used to reset the Patterns [] holding regex for each word category
-     * 
-     * TODO Implement Method
+     * Used to reset the Patterns map holding regex for each word category
      * 
      * @param scores
      * @param abs    The Absolute Values of Z-Score Limit Represented in Map Keys
