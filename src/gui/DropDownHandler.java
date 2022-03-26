@@ -1,13 +1,9 @@
 package src.gui;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
 
-import info.debatty.java.stringsimilarity.interfaces.MetricStringDistance;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import src.corpi.CorpusProvider;
-
-import java.awt.*;
-import java.net.URL;
 
 public class DropDownHandler {
 
@@ -29,14 +25,14 @@ public class DropDownHandler {
             "WeightedLevenshtein",
     };
     public static String[] CORPI_OPTIONS = { "Bee Movie" };
-    protected final JComboBox algComboBox = new JComboBox<>(ALG_OPTIONS);
-    protected final JComboBox corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
+    protected final JComboBox<String> algComboBox = new JComboBox<>(ALG_OPTIONS);
+    protected final JComboBox<String> corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
 
     public DropDownHandler() {
 
         corpusComboBox.addActionListener((e) -> {
             int selected = algComboBox.getSelectedIndex();
-            GUI.setCorpusTextPanel(CorpusProvider.getCorpus(selected));
+            CorpusTextPanel.setCorpusTextContents(CorpusProvider.getCorpus(selected));
 
         });
     }
@@ -45,7 +41,7 @@ public class DropDownHandler {
      * 
      * @return Dropdown menu for Algorithm Options
      */
-    public JComboBox getAlgDropDown() {
+    public JComboBox<String> getAlgDropDown() {
         return algComboBox;
 
     }
@@ -54,7 +50,7 @@ public class DropDownHandler {
      * 
      * @return Dropdown menu for Corpus Options
      */
-    public JComboBox getCorpusDropDown() {
+    public JComboBox<String> getCorpusDropDown() {
         return corpusComboBox;
     }
 
