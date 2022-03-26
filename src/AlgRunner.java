@@ -47,7 +47,6 @@ public class AlgRunner implements Runnable {
      * @param searchWord Word to search for
      */
     public AlgRunner(MetricStringDistance msd, TokenProvider provider, String searchWord) {
-        Levenshtein l = new Levenshtein();
         this.scoreMap = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
         this.provider = provider;

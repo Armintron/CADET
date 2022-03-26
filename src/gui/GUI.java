@@ -17,11 +17,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import src.corpi.CorpusProvider;
+
 public class GUI {
 
     // Class Constants
     private static final int WINDOW_WIDTH = 750;// pixels
-    private static final int WINDOW_HEIGHT = 235;// pixels
+    private static final int WINDOW_HEIGHT = 735;// pixels
     private static final int FIELD_WIDTH = 35;// characters
     private static final int AREA_WIDTH = 40;// characters
     private static final int BUTTON_HORIZONTAL_SPACING = 10;
@@ -41,8 +43,7 @@ public class GUI {
         JFrame frame = new JFrame(APPLICATION_NAME);
         MAIN_WINDOW = frame;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); // x and y
-        frame.setMinimumSize(new Dimension(600, 600));
+        frame.setMinimumSize(new Dimension(650, 600));
         frame.setResizable(true);
         frame.setLayout(new BorderLayout());
 
@@ -52,9 +53,11 @@ public class GUI {
         // Center Text Box
         frame.add(createCorpusTextPanel(), BorderLayout.CENTER);
         frame.add(createTopUI(), BorderLayout.NORTH);
+        // frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); // x and y
 
         frame.pack();
         frame.setLocationByPlatform(true);
+        frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); // x and y
         frame.setVisible(true);
 
     }
@@ -125,6 +128,7 @@ public class GUI {
         JScrollPane scroll = new JScrollPane(inputArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         ret.add(scroll, BorderLayout.CENTER);
+        setCorpusTextPanel(dropDownHandler.getSelectedCorpus());
 
         return ret;
     }

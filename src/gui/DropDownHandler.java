@@ -68,4 +68,12 @@ public class DropDownHandler {
 
     }
 
+    /**
+     * 
+     * @return String representation of selected Corpus
+     */
+    public String getSelectedCorpus() {
+        return CorpusProvider.getCorpus(corpusComboBox.getSelectedIndex());
+    }
+
 }
