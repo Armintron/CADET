@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -87,23 +88,7 @@ public class CorpusTextPanel {
         Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
         ResultStats stats = new ResultStats(runner.scoreMap);
 
-        Map<Integer, ArrayList<WordScoreEntry>> zscores = new HashMap<>();
-        for (int i = -1; i < 2; i++) {
-            zscores.put(i, new ArrayList<>());
-        }
-        // Get Word Distribution by Z-Score
-        for (WordScoreEntry entry : runner.scoreMap) {
-            int z = (int) stats.getZScore(entry.getScore());
-            // TODO Support -3 < Z < 3
-            if (z > 0) {
-                zscores.get(1).add(entry);
-            } else if (z < 0) {
-                zscores.get(-1).add(entry);
-            } else {
-                zscores.get(0).add(entry);
-            }
-        }
-        corpusDocumentFilter.resetPatterns(zscores, 1);
+        corpusDocumentFilter.resetPatterns((SortedSet<WordScoreEntry>) runner.scoreMap);
 
         corpusDocumentFilter.handleTextChanged();
 

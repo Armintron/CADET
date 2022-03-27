@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,7 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.DocumentFilter.FilterBypass;
 
+import src.AlgRunner;
 import src.AlgRunner.WordScoreEntry;
 
 final class CorpusDocumentFilter extends DocumentFilter {
@@ -26,23 +28,23 @@ final class CorpusDocumentFilter extends DocumentFilter {
     static private final StyleContext styleContext = StyleContext.getDefaultStyleContext();
 
     // Define the Different Color Groups
-    static final AttributeSet greenAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
-            StyleConstants.Foreground, Color.GREEN);
     static protected final AttributeSet blackAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
             StyleConstants.Foreground, Color.BLACK);
-    static protected final AttributeSet redAttributeSet = styleContext.addAttribute(styleContext.getEmptySet(),
-            StyleConstants.Foreground, Color.RED);
 
-    static final Map<Integer, AttributeSet> zscoreColorMap;
-    static {
-        Map<Integer, AttributeSet> map = new HashMap<>();
-        map.put(-1, greenAttributeSet);
-        map.put(0, blackAttributeSet);
-        map.put(1, redAttributeSet);
-        zscoreColorMap = Collections.unmodifiableMap(map);
-    }
+    // TODO Maybe change where this comes from
+    Map<String, Double> wordScoreMap;
+    SortedSet<WordScoreEntry> scoreEntries;
+    private double intervals;
 
-    Map<Integer, Pattern> patterns = new HashMap<>();
+    public static final AttributeSet[] COLORS = {
+            createStyleFromColor(new Color(105, 179, 76)),
+            createStyleFromColor(new Color(172, 179, 52)),
+            createStyleFromColor(new Color(250, 183, 51)),
+            createStyleFromColor(new Color(255, 142, 21)),
+            createStyleFromColor(new Color(255, 78, 17)),
+            createStyleFromColor(new Color(255, 13, 13)),
+    };
+    Pattern patterns[];
 
     public void handleTextChanged() {
         SwingUtilities.invokeLater(new Runnable() {
@@ -54,20 +56,36 @@ final class CorpusDocumentFilter extends DocumentFilter {
         });
     }
 
+    static private AttributeSet createStyleFromColor(Color c) {
+        return styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, c);
+    }
+
     private void updateTextStyles() {
         // Clear existing styles
         styledDocument.setCharacterAttributes(0, CorpusTextPanel.getCorpusTextPane().getText().length(),
                 blackAttributeSet, true);
 
         // TODO Maybe we can implement some more concurrency here?
-        for (Entry<Integer, Pattern> e : patterns.entrySet()) {
-            Matcher matcher = e.getValue().matcher(CorpusTextPanel.getCorpusTextPane().getText());
-            while (matcher.find()) {
-                // Change Color of found Words
-                styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
-                        zscoreColorMap.get(e.getKey()), false);
+        Matcher matcher = Pattern.compile("\\b\\S*\\b").matcher(CorpusTextPanel.getCorpusTextPane().getText());
+        while (matcher.find()) {
+            String word;
+            try {
+                word = styledDocument.getText(matcher.start(), matcher.end() - matcher.start());
+            } catch (BadLocationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                continue;
             }
-
+            word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
+            // Change Color of found Words=
+            try {
+                int index = (int) ((wordScoreMap.get(word) - scoreEntries.first().getScore()) / intervals);
+                styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
+                        COLORS[index], false);
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }
         }
 
     }
@@ -79,10 +97,26 @@ final class CorpusDocumentFilter extends DocumentFilter {
      * @param abs    The Absolute Values of Z-Score Limit Represented in Map Keys
      * 
      */
-    public void resetPatterns(Map<Integer, ArrayList<WordScoreEntry>> scores, int abs) {
+    public void resetPatterns(SortedSet<WordScoreEntry> scores) {
+        this.scoreEntries = scores;
+        wordScoreMap = new HashMap<>();
+        double max = scores.last().getScore();
+        double min = scores.first().getScore();
+        intervals = (max - min) / (COLORS.length - 1);
+        ArrayList<WordScoreEntry>[] scoreInvervals = new ArrayList[COLORS.length];
+        patterns = new Pattern[COLORS.length];
+        for (int i = 0; i < scoreInvervals.length; i++) {
+            scoreInvervals[i] = new ArrayList<>();
+        }
 
-        for (int i = -1 * abs; i <= abs; i++) {
-            patterns.put(i, buildPattern(scores.get(i)));
+        for (WordScoreEntry e : scores) {
+            int index = (int) ((e.getScore() - min) / intervals);
+            scoreInvervals[index].add(e);
+            wordScoreMap.put(e.getWord(), e.getScore());
+        }
+
+        for (int i = 0; i < patterns.length; i++) {
+            patterns[i] = buildPattern(scoreInvervals[i]);
         }
 
     }

@@ -46,7 +46,7 @@ public class TokenProvider {
      */
     public TokenProvider(String corpus) {
         this.words = new ArrayList<>();
-        for (String word : corpus.split(" ")) {
+        for (String word : corpus.split(" |\n")) {
             String cur = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
             words.add(cur);
         }
