@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Scanner;
 import info.debatty.java.stringsimilarity.*;
+import src.Phonetic.Encoder;
 
 public class Main {
 
