@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
 
         try (Scanner input = new Scanner(System.in)) {
-            File inFile = new File("corpi/beemovie.txt");
+            File inFile = new File("corpi\\beemovie.txt");
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
             String searchWord;
