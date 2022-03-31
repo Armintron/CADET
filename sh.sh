@@ -8,6 +8,9 @@ elif [ "$OSTYPE" == "cygwin" ]; then
     LIB=".;./lib/*"
 fi
 
+rm src/*.class
+rm src/gui/*.class
+
 main() {
     javac -cp $LIB src/Main.java
     java -cp $LIB src/Main
@@ -16,11 +19,6 @@ main() {
 gui() {
     javac -cp $LIB src/gui/GUI.java
     java -cp $LIB src/gui/GUI
-}
-
-clean() {
-    rm src/*.class
-    rm src/gui/*.class
 }
 
 case "$1" in
@@ -32,12 +30,8 @@ case "$1" in
         gui
         ;;
 
-    "clean"|"Clean")
-        clean
-        ;;
-
     *)
         echo "Usage: . sh.sh <mode>"
-        echo "Supported modes: main, clean, and gui."
+        echo "Supported modes: main, and gui."
         ;;
 esac

@@ -79,9 +79,13 @@ final class CorpusDocumentFilter extends DocumentFilter {
             word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
             // Change Color of found Words=
             try {
-                int index = (int) ((wordScoreMap.get(word) - scoreEntries.first().getScore()) / intervals);
+                // int index = (int) ((wordScoreMap.get(word) - scoreEntries.first().getScore()) / intervals);
+                Double range = scoreEntries.last().getScore() - scoreEntries.first().getScore();
+                range = Math.abs(range);
+                Double perc = (wordScoreMap.get(word) - scoreEntries.first().getScore()) / range;
+                Color myColor = new Color((int)Math.min(255, 512*perc),(int) Math.min(255, 512*(1-perc)), 0);
                 styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
-                        COLORS[index], false);
+                        createStyleFromColor(myColor), false);
             } catch (Exception e) {
                 // TODO: handle exception
                 e.printStackTrace();
