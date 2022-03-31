@@ -1,10 +1,16 @@
 #!/bin/sh
 
+# Globals
+curDir="$PWD"
+pkgs=()
+
+echo $OSTYPE
+
 if [ "$OSTYPE" == "linux-gnu" ]; then
+    echo "Linux"
     LIB=".:./lib/*"
-elif [ "$OSTYPE" == "msys" ]; then
-    LIB=".;./lib/*"
-elif [ "$OSTYPE" == "cygwin" ]; then
+elif [ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]; then
+    echo "Windows"
     LIB=".;./lib/*"
 fi
 
