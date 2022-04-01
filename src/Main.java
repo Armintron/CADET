@@ -6,62 +6,33 @@ import java.util.Scanner;
 import java.util.Random;
 import info.debatty.java.stringsimilarity.*;
 
+import src.Benchmarking;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        try (Scanner input = new Scanner(System.in)) {
-            File inFile = new File("corpi" + File.separator + "beemovie.txt");
+        /*try (Scanner input = new Scanner(System.in)) {
+            File inFile = new File("corpi\\beemovie.txt");
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
             String searchWord;
             do {
                 System.out.println("How many Threads?");
                 int numThread = input.nextInt();
-                System.out.println("Search Word (enter \"?\" for random words on each iteration):");
+                System.out.println("Search Word:");
                 searchWord = input.next();
-                boolean useRand = searchWord.equals("?");
-                int maxWordSize = -1;
-                if (useRand) {
-                    System.out.println("Max length of random words?");
-                    maxWordSize = input.nextInt();
-                }
-
-                System.out.println("How many iterations?");
-                int iterations = input.nextInt();
-
-                double runningAverage = 0;
-                double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
-                for (int i = 1; i <= iterations; i++) {
-                    if (useRand) {
-                        Random r = new Random();
-                        searchWord = "";
-                        int wordSize = r.nextInt(maxWordSize) + 1;
-                        for (int j = 0; j < wordSize; j++) {
-                            searchWord += (char)('a' + r.nextInt(26));
-                        }
-                    }
-                    AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
-                    long startTime = System.currentTimeMillis();
-                    startAndWaitForThreads(levenRunner, numThread);
-                    long endTime = System.currentTimeMillis();
-                    double t = endTime - startTime;
-                    runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
-                    hi = Math.max(hi, t);
-                    lo = Math.min(lo, t);
-                    // outputScore(levenRunner.scoreMap.iterator());
-                    provider.restartIterator();
-                }
-                System.out.printf("Average execution time was: %.3fms\n", runningAverage);
-                System.out.println("Fastest execution time was: " + (long)lo + "ms");
-                System.out.println("Slowest execution time was: " + (long)hi + "ms");
-
+                AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
+                startAndWaitForThreads(levenRunner, numThread);
+                outputScore(levenRunner.scoreMap.iterator());
+                provider.restartIterator();
             } while (!searchWord.equalsIgnoreCase("EXIT"));
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
+        Benchmarking.benchmarkOne();
     }
 
     public static void outputScore(Iterator iterator) {
