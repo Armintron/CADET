@@ -32,7 +32,7 @@ public class AlgRunner implements Runnable {
 
         @Override
         public int compareTo(WordScoreEntry o) {
-            int scoreCmp = (int) (this.score - o.score);
+            int scoreCmp = Double.compare(this.score, o.score);
             if (scoreCmp != 0) {
                 return scoreCmp;
             } else {

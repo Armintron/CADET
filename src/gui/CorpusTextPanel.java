@@ -88,8 +88,7 @@ public class CorpusTextPanel {
         Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
         ResultStats stats = new ResultStats(runner.scoreMap);
 
-        corpusDocumentFilter.resetPatterns((SortedSet<WordScoreEntry>) runner.scoreMap);
-
+        corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
 
     }
