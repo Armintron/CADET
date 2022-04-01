@@ -1,5 +1,6 @@
 package src;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,12 +12,22 @@ public class ResultStats {
 
     public SortedSet<WordScoreEntry> scores;
     public HashMap<String, Double> scoreMap = new HashMap<>();
+    public final Double zScoreCutOff = 2.5;
     public double mean;
     public Double stdDev = null;
     public double max, min;
 
+    private ArrayList<WordScoreEntry> clippedWords = new ArrayList<WordScoreEntry>();
+
     public ResultStats(SortedSet<WordScoreEntry> scoreMap) {
         scores = scoreMap;
+        for (WordScoreEntry wse : scoreMap) {
+            if (getZScore(wse.getScore()) > zScoreCutOff)
+            {
+                clippedWords.add(wse);
+                scoreMap.remove(wse);
+            }
+        }
         max = scoreMap.last().score;
         min = scoreMap.first().score;
         computeStats();
@@ -46,11 +57,18 @@ public class ResultStats {
     }
 
     private void computeStats() {
-
+        // normalizes to range [0-1]
         for (WordScoreEntry wse : scores) {
             wse.score = (wse.score - min) / (max - min);
             scoreMap.put(wse.word, wse.score);
         }
+        
+        // "clip" the words by putting them in the bad zone
+        for (WordScoreEntry wse : clippedWords) {
+            scoreMap.put(wse.word, 1.0);
+        }
+
+
 
     }
 
