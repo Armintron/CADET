@@ -85,7 +85,7 @@ public class CorpusTextPanel {
         StringDistance alg = GUI.dropDownHandler.getSelectedAlg();
         TokenProvider tp = new TokenProvider(corpusTextPane.getText());
         AlgRunner runner = new AlgRunner(alg, tp, input);
-        Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
+        Main.startAndWaitForThreads(runner, (Integer)GUI.threadCountField.getValue());
         ResultStats stats = new ResultStats(runner.scoreMap);
 
         corpusDocumentFilter.setResultStats(stats);

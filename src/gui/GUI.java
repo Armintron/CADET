@@ -10,7 +10,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 public class GUI {
 
@@ -21,14 +23,13 @@ public class GUI {
     private static final int AREA_WIDTH = 40;// characters
     private static final int BUTTON_HORIZONTAL_SPACING = 10;
     private static final int BUTTON_VERTICAL_SPACING = 10;
-    // TODO Add thread picker UI element
-    protected static int NUM_THREADS = 8;
     private String APPLICATION_NAME = "CADET Fuzzy String Search";
     JFrame MAIN_WINDOW;
 
     // Custom Class Instances
     protected static DropDownHandler connectionPanel;
     protected static JTextField searchWordField;
+    protected static JSpinner threadCountField;
     protected static DropDownHandler dropDownHandler = new DropDownHandler();
 
     public GUI() {
@@ -61,8 +62,13 @@ public class GUI {
         ret.setLayout(new FlowLayout(FlowLayout.CENTER, BUTTON_HORIZONTAL_SPACING, BUTTON_VERTICAL_SPACING));
         searchWordField = new JTextField("Search Word", FIELD_WIDTH);
         searchWordField.setColumns(FIELD_WIDTH);
+        threadCountField = new JSpinner(new SpinnerNumberModel(1, 1, 32, 1));
+        threadCountField.setToolTipText("Number of threads to use");
         ret.add(dropDownHandler.getAlgDropDown());
+        dropDownHandler.getAlgDropDown().setToolTipText("Edit distance algorithm to use");;
         ret.add(searchWordField);
+        searchWordField.setToolTipText("Word to fuzzy-search for");
+        ret.add(threadCountField);
         return ret;
     }
 
@@ -92,6 +98,7 @@ public class GUI {
         });
 
         ret.add(dropDownHandler.getCorpusDropDown());
+        dropDownHandler.getCorpusDropDown().setToolTipText("Corpus to search through");
         ret.add(executeButton);
         ret.add(clearButton);
 
