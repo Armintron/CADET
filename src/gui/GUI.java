@@ -19,7 +19,7 @@ public class GUI {
     // Class Constants
     private static final int WINDOW_WIDTH = 750;// pixels
     private static final int WINDOW_HEIGHT = 735;// pixels
-    private static final int FIELD_WIDTH = 35;// characters
+    private static final int FIELD_WIDTH = 15;// characters
     private static final int AREA_WIDTH = 40;// characters
     private static final int BUTTON_HORIZONTAL_SPACING = 10;
     private static final int BUTTON_VERTICAL_SPACING = 10;
@@ -62,13 +62,15 @@ public class GUI {
         ret.setLayout(new FlowLayout(FlowLayout.CENTER, BUTTON_HORIZONTAL_SPACING, BUTTON_VERTICAL_SPACING));
         searchWordField = new JTextField("Search Word", FIELD_WIDTH);
         searchWordField.setColumns(FIELD_WIDTH);
-        threadCountField = new JSpinner(new SpinnerNumberModel(1, 1, 32, 1));
-        threadCountField.setToolTipText("Number of threads to use");
         ret.add(dropDownHandler.getAlgDropDown());
         dropDownHandler.getAlgDropDown().setToolTipText("Edit distance algorithm to use");;
         ret.add(searchWordField);
         searchWordField.setToolTipText("Word to fuzzy-search for");
+        threadCountField = new JSpinner(new SpinnerNumberModel(1, 1, 32, 1));
+        threadCountField.setToolTipText("Number of threads to use");
         ret.add(threadCountField);
+        dropDownHandler.phoneticComboBox.setToolTipText("Phonetic encoder to use (optional)");
+        ret.add(dropDownHandler.phoneticComboBox);
         return ret;
     }
 
