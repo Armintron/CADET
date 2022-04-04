@@ -1,6 +1,8 @@
 package src;
 
 import java.io.File;
+import java.io.PrintStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Random;
@@ -115,6 +117,12 @@ public class Benchmarking {
         return new double[] {runningAverage, lo, hi};
     }
 
+    private static void printResults(double[] results) {
+        System.out.printf("Average execution time was: %.3fms\n", results[0]);
+        System.out.println("Fastest execution time was: " + (long)results[1] + "ms");
+        System.out.println("Slowest execution time was: " + (long)results[2] + "ms");
+    }
+
     public static void benchmarkOne() {
         try (Scanner input = new Scanner(System.in)) {
             TokenProvider provider = askTokenProvider(input);
@@ -141,11 +149,7 @@ public class Benchmarking {
             int iterations = askInt("Number of iterations to run for:", input);
 
             double[] results = runIterations(useRand, iterations, searchWord, maxWordSize, alg, algName, provider, numThreads);
-
-            System.out.printf("Average execution time was: %.3fms\n", results[0]);
-            System.out.println("Fastest execution time was: " + (long)results[1] + "ms");
-            System.out.println("Slowest execution time was: " + (long)results[2] + "ms");
-
+            printResults(results);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -159,21 +163,43 @@ public class Benchmarking {
             int iterations = askInt("Number of iterations to run for:", input);
             int maxWordSize = askInt("Max length of random words:", input);
             String fileName = askString("File name to use (enter \"?\" for stdout):", input);
-            File output = null;
+            PrintStream output = null;
             if (!fileName.equals("?")) {
-                output = new File(fileName);
-                if (output.createNewFile()) {
-
-                }
+                output = new PrintStream(fileName);
             }
 
+            if (output != null) {
+                // TODO corpus name
+                output.println("Iterations used: " + iterations);
+                output.println("Max random word length: " + maxWordSize);
+            }
+            output.println();
+            System.out.println();
             for (int i = 0; i < DropDownHandler.ALG_OPTIONS.length; i++) {
+                StringDistance alg = DropDownHandler.ALGS[i];
+                String algName = DropDownHandler.ALG_OPTIONS[i];
+                if (output != null) {
+                    output.println(algName);
+                    output.println("==================================");
+                    output.println("# threads | avg(in ms)    lo    hi");
+                }
                 for (int j = 1; j <= maxThreads; j *= 2) {
-                    runIterations(true, iterations, "?", maxWordSize, DropDownHandler.ALGS[i], 
-                                  DropDownHandler.ALG_OPTIONS[i], provider, j);
-                    
+                    double[] results = runIterations(true, iterations, "?", maxWordSize, alg, 
+                                                     algName, provider, j);
+                    if (output != null) {
+                        output.printf("%9s | %10.3f %5s %5s\n", j, results[0], (long)results[1], (long)results[2]);
+                    }
+                    else {
+                        printResults(results);
+                    }
+                }
+                if (output != null) {
+                    output.println("==================================");
+                    output.println();
                 }
             }
+            System.out.println();
+            System.out.println("Benchmarking complete!");
         } catch (Exception e) {
             e.printStackTrace();
         }
