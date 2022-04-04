@@ -49,10 +49,9 @@ public class Benchmarking {
         return directory.list();
     }
 
-    public static void benchmarkOne() {
+    private static TokenProvider askTokenProvider() {
+        TokenProvider provider = null;
         try (Scanner input = new Scanner(System.in)) {
-            System.out.println("|======================================|");
-
             System.out.println("Corpus to use (enter number from list below):");
             String[] corpi = getListOfFiles();
             for (int i = 1; i <= corpi.length; i++) {
@@ -60,7 +59,52 @@ public class Benchmarking {
             }
             System.out.print("> ");
             File corpus = new File(CORPI_ROOT + File.separator + corpi[input.nextInt() - 1]);
-            TokenProvider provider = new TokenProvider(corpus);
+            provider = new TokenProvider(corpus);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return provider;
+    }
+
+    private static int askInt(String request, Scanner input) {
+        System.out.println(request);
+        System.out.print("> ");
+        return input.nextInt();
+    }
+
+    private static void runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
+                                      StringDistance alg, TokenProvider provider, int numThreads) {
+        double runningAverage = 0;
+        double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
+        // try (ProgressBar pb = new ProgressBar(""))
+        for (int i = 1; i <= iterations; i++) {
+            if (useRand) {
+                Random r = new Random();
+                searchWord = "";
+                int wordSize = r.nextInt(maxWordSize) + 1;
+                for (int j = 0; j < wordSize; j++) {
+                    searchWord += (char)('a' + r.nextInt(26));
+                }
+            }
+            AlgRunner levenRunner = new AlgRunner(alg, provider, searchWord);
+            long startTime = System.currentTimeMillis();
+            Main.startAndWaitForThreads(levenRunner, numThreads);
+            long endTime = System.currentTimeMillis();
+            double t = endTime - startTime;
+            runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
+            hi = Math.max(hi, t);
+            lo = Math.min(lo, t);
+            provider.restartIterator();
+        }
+
+        System.out.printf("Average execution time was: %.3fms\n", runningAverage);
+        System.out.println("Fastest execution time was: " + (long)lo + "ms");
+        System.out.println("Slowest execution time was: " + (long)hi + "ms");
+    }
+
+    public static void benchmarkOne() {
+        try (Scanner input = new Scanner(System.in)) {
+            TokenProvider provider = askTokenProvider();
 
             System.out.println("Algorithm to run (enter number from list below):");
             for (int i = 1; i <= DropDownHandler.ALG_OPTIONS.length; i++) {
@@ -69,9 +113,7 @@ public class Benchmarking {
             System.out.print("> ");
             StringDistance alg = DropDownHandler.ALGS[input.nextInt()];
 
-            System.out.println("Number of threads to use:");
-            System.out.print("> ");
-            int numThreads = input.nextInt();
+            int numThreads = askInt("Max number of threads to use:", input);
 
             System.out.println("Search word to use (enter \"?\" for random words on each iteration):");
             System.out.print("> ");
@@ -79,43 +121,31 @@ public class Benchmarking {
             boolean useRand = searchWord.equals("?");
             int maxWordSize = -1;
             if (useRand) {
-                System.out.println("Max length of random words:");
-                System.out.print("> ");
-                maxWordSize = input.nextInt();
+                maxWordSize = askInt("Max length of random words:", input);
             }
 
-            System.out.println("Number of iterations to run for:");
-            System.out.print("> ");
-            int iterations = input.nextInt();
+            int iterations = askInt("Number of iterations to run for:", input);
 
-            double runningAverage = 0;
-            double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
-            for (int i = 1; i <= iterations; i++) {
-                if (useRand) {
-                    Random r = new Random();
-                    searchWord = "";
-                    int wordSize = r.nextInt(maxWordSize) + 1;
-                    for (int j = 0; j < wordSize; j++) {
-                        searchWord += (char)('a' + r.nextInt(26));
-                    }
-                }
-                AlgRunner levenRunner = new AlgRunner(alg, provider, searchWord);
-                long startTime = System.currentTimeMillis();
-                Main.startAndWaitForThreads(levenRunner, numThreads);
-                long endTime = System.currentTimeMillis();
-                double t = endTime - startTime;
-                runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
-                hi = Math.max(hi, t);
-                lo = Math.min(lo, t);
-                provider.restartIterator();
-            }
-
-            System.out.printf("Average execution time was: %.3fms\n", runningAverage);
-            System.out.println("Fastest execution time was: " + (long)lo + "ms");
-            System.out.println("Slowest execution time was: " + (long)hi + "ms");
+            runIterations(useRand, iterations, searchWord, maxWordSize, alg, provider, numThreads);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /*public static void benchmarkAll() {
+        try (Scanner input = new Scanner(System.in)) {
+            TokenProvider provider = askTokenProvider();
+
+            int maxThreads = askInt("Max number of threads to use:", input);
+            int iterations = askInt("Number of iterations to run for:", input);
+            int maxWordSize = askInt("Max length of random words:", input);
+
+            for (StringDistance alg : DropDownHandler.ALGS) {
+                for (int i = 1; i <= maxThreads; i *= 2) {
+                    runIterations(true, iterations, "?", maxWordSize, alg, provider, i);
+                }
+            }
+        }
+    }*/
 }
