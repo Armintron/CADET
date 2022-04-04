@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.Random;
 import info.debatty.java.stringsimilarity.*;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
+import me.tongfei.progressbar.*;
 import src.gui.DropDownHandler;
 
 
@@ -49,52 +50,52 @@ public class Benchmarking {
         return directory.list();
     }
 
-    private static TokenProvider askTokenProvider() {
-        TokenProvider provider = null;
-        try (Scanner input = new Scanner(System.in)) {
-            System.out.println("Corpus to use (enter number from list below):");
-            String[] corpi = getListOfFiles();
-            for (int i = 1; i <= corpi.length; i++) {
-                System.out.println(i + ". " + corpi[i-1]);
-            }
-            System.out.print("> ");
-            File corpus = new File(CORPI_ROOT + File.separator + corpi[input.nextInt() - 1]);
-            provider = new TokenProvider(corpus);
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static TokenProvider askTokenProvider(Scanner input) {
+        System.out.println("Corpus to use (enter number from list below):");
+        String[] corpi = getListOfFiles();
+        for (int i = 1; i <= corpi.length; i++) {
+            System.out.println(i + ". " + corpi[i-1]);
         }
+        System.out.print("> ");
+        File corpus = new File(CORPI_ROOT + File.separator + corpi[input.nextInt() - 1]);
+        TokenProvider provider = new TokenProvider(corpus);
+
         return provider;
     }
 
     private static int askInt(String request, Scanner input) {
         System.out.println(request);
         System.out.print("> ");
-        return input.nextInt();
+        int ret = input.nextInt();
+        return ret;
     }
 
     private static void runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
                                       StringDistance alg, String algName, TokenProvider provider, int numThreads) {
         double runningAverage = 0;
         double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
-        // try (ProgressBar pb = new ProgressBar("Running " + algName))
-        for (int i = 1; i <= iterations; i++) {
-            if (useRand) {
-                Random r = new Random();
-                searchWord = "";
-                int wordSize = r.nextInt(maxWordSize) + 1;
-                for (int j = 0; j < wordSize; j++) {
-                    searchWord += (char)('a' + r.nextInt(26));
+        try (ProgressBar pb = new ProgressBar("Running " + algName + " w/ " + numThreads + " threads...", 
+                                              iterations)) {
+            for (int i = 1; i <= iterations; i++) {
+                if (useRand) {
+                    Random r = new Random();
+                    searchWord = "";
+                    int wordSize = r.nextInt(maxWordSize) + 1;
+                    for (int j = 0; j < wordSize; j++) {
+                        searchWord += (char)('a' + r.nextInt(26));
+                    }
                 }
+                AlgRunner levenRunner = new AlgRunner(alg, provider, searchWord);
+                long startTime = System.currentTimeMillis();
+                Main.startAndWaitForThreads(levenRunner, numThreads);
+                long endTime = System.currentTimeMillis();
+                double t = endTime - startTime;
+                runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
+                hi = Math.max(hi, t);
+                lo = Math.min(lo, t);
+                provider.restartIterator();
+                pb.step();
             }
-            AlgRunner levenRunner = new AlgRunner(alg, provider, searchWord);
-            long startTime = System.currentTimeMillis();
-            Main.startAndWaitForThreads(levenRunner, numThreads);
-            long endTime = System.currentTimeMillis();
-            double t = endTime - startTime;
-            runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
-            hi = Math.max(hi, t);
-            lo = Math.min(lo, t);
-            provider.restartIterator();
         }
 
         System.out.printf("Average execution time was: %.3fms\n", runningAverage);
@@ -104,13 +105,14 @@ public class Benchmarking {
 
     public static void benchmarkOne() {
         try (Scanner input = new Scanner(System.in)) {
-            TokenProvider provider = askTokenProvider();
+            TokenProvider provider = askTokenProvider(input);
 
             System.out.println("Algorithm to run (enter number from list below):");
             for (int i = 1; i <= DropDownHandler.ALG_OPTIONS.length; i++) {
                 System.out.println(i + ". " + DropDownHandler.ALG_OPTIONS[i-1]);
             }
             System.out.print("> ");
+            if (input.hasNextInt()) {}
             int algIndex = input.nextInt() - 1;
             StringDistance alg = DropDownHandler.ALGS[algIndex];
             String algName = DropDownHandler.ALG_OPTIONS[algIndex];
