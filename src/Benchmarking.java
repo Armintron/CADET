@@ -73,10 +73,10 @@ public class Benchmarking {
     }
 
     private static void runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
-                                      StringDistance alg, TokenProvider provider, int numThreads) {
+                                      StringDistance alg, String algName, TokenProvider provider, int numThreads) {
         double runningAverage = 0;
         double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
-        // try (ProgressBar pb = new ProgressBar(""))
+        // try (ProgressBar pb = new ProgressBar("Running " + algName))
         for (int i = 1; i <= iterations; i++) {
             if (useRand) {
                 Random r = new Random();
@@ -111,7 +111,9 @@ public class Benchmarking {
                 System.out.println(i + ". " + DropDownHandler.ALG_OPTIONS[i-1]);
             }
             System.out.print("> ");
-            StringDistance alg = DropDownHandler.ALGS[input.nextInt()];
+            int algIndex = input.nextInt() - 1;
+            StringDistance alg = DropDownHandler.ALGS[algIndex];
+            String algName = DropDownHandler.ALG_OPTIONS[algIndex];
 
             int numThreads = askInt("Max number of threads to use:", input);
 
@@ -126,7 +128,7 @@ public class Benchmarking {
 
             int iterations = askInt("Number of iterations to run for:", input);
 
-            runIterations(useRand, iterations, searchWord, maxWordSize, alg, provider, numThreads);
+            runIterations(useRand, iterations, searchWord, maxWordSize, alg, algName, provider, numThreads);
 
         } catch (Exception e) {
             e.printStackTrace();
