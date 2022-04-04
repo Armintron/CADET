@@ -72,25 +72,35 @@ public class Phonetic {
      */
     public static String ToPhonetic(String word, Encoder encoder)
     {
-        switch(encoder)
-        {
+        String ret = "";
+        switch (encoder) {
             case CaverPhone2:
-                return caverphone2.encode(word);
+                ret = caverphone2.encode(word);
+                break;
             case DoubleMetaphone:
-                return doubleMetaphone.doubleMetaphone(word);
+                ret = doubleMetaphone.doubleMetaphone(word);
+                break;
             case MatchRating:
-                return matchRating.encode(word);
+                ret = matchRating.encode(word);
+                break;
             case Metaphone:
-                return metaphone.encode(word);
+                ret = metaphone.encode(word);
+                break;
             case Nysiis:
-                return nysiis.encode(word);
+                ret = nysiis.encode(word);
+                break;
             case RefinedSoundex:
-                return refinedSoundex.encode(word);
+                ret = refinedSoundex.encode(word);
+                break;
             case Soundex:
-                return soundex.encode(word);
+                ret = soundex.encode(word);
+                break;
             default:
-                return "NO ENCODER CHOSEN";
+                ret =  "NO ENCODER CHOSEN";
         }
+        if (ret == null || ret.isEmpty())
+            return "";
+        return ret;
     }
 
     /**
