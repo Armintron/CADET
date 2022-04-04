@@ -90,7 +90,7 @@ public class Benchmarking {
                                       StringDistance alg, String algName, TokenProvider provider, int numThreads) {
         double runningAverage = 0;
         double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
-        try (ProgressBar pb = new ProgressBar("Running " + algName + " w/ " + numThreads + " threads...", 
+        try (ProgressBar pb = new ProgressBar(algName + ", " + numThreads + " threads -", 
                                               iterations)) {
             for (int i = 1; i <= iterations; i++) {
                 if (useRand) {
@@ -172,8 +172,8 @@ public class Benchmarking {
                 // TODO corpus name
                 output.println("Iterations used: " + iterations);
                 output.println("Max random word length: " + maxWordSize);
+                output.println();
             }
-            output.println();
             System.out.println();
             for (int i = 0; i < DropDownHandler.ALG_OPTIONS.length; i++) {
                 StringDistance alg = DropDownHandler.ALGS[i];
