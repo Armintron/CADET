@@ -90,6 +90,6 @@ public class CorpusTextPanel {
 
         corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
-
+        BestMatchesPanel.setBestMatchesContents(runner.scoreMap.iterator());
     }
 }
