@@ -50,6 +50,20 @@ public class Benchmarking {
         return directory.list();
     }
 
+    private static char askChar(String request, Scanner input) {
+        System.out.println(request);
+        System.out.print("> ");
+        char ret = input.next().charAt(0);
+        return ret;
+    }
+
+    private static int askInt(String request, Scanner input) {
+        System.out.println(request);
+        System.out.print("> ");
+        int ret = input.nextInt();
+        return ret;
+    }
+
     private static TokenProvider askTokenProvider(Scanner input) {
         System.out.println("Corpus to use (enter number from list below):");
         String[] corpi = getListOfFiles();
@@ -63,14 +77,14 @@ public class Benchmarking {
         return provider;
     }
 
-    private static int askInt(String request, Scanner input) {
+    private static String askString(String request, Scanner input) {
         System.out.println(request);
         System.out.print("> ");
-        int ret = input.nextInt();
+        String ret = input.next();
         return ret;
     }
 
-    private static void runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
+    private static double[] runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
                                       StringDistance alg, String algName, TokenProvider provider, int numThreads) {
         double runningAverage = 0;
         double hi = Long.MIN_VALUE, lo = Long.MAX_VALUE;
@@ -98,9 +112,7 @@ public class Benchmarking {
             }
         }
 
-        System.out.printf("Average execution time was: %.3fms\n", runningAverage);
-        System.out.println("Fastest execution time was: " + (long)lo + "ms");
-        System.out.println("Slowest execution time was: " + (long)hi + "ms");
+        return new double[] {runningAverage, lo, hi};
     }
 
     public static void benchmarkOne() {
@@ -119,9 +131,7 @@ public class Benchmarking {
 
             int numThreads = askInt("Max number of threads to use:", input);
 
-            System.out.println("Search word to use (enter \"?\" for random words on each iteration):");
-            System.out.print("> ");
-            String searchWord = input.next();
+            String searchWord = askString("Search word to use (enter \"?\" for random words on each iteration):", input);
             boolean useRand = searchWord.equals("?");
             int maxWordSize = -1;
             if (useRand) {
@@ -130,26 +140,36 @@ public class Benchmarking {
 
             int iterations = askInt("Number of iterations to run for:", input);
 
-            runIterations(useRand, iterations, searchWord, maxWordSize, alg, algName, provider, numThreads);
+            double[] results = runIterations(useRand, iterations, searchWord, maxWordSize, alg, algName, provider, numThreads);
+
+            System.out.printf("Average execution time was: %.3fms\n", results[0]);
+            System.out.println("Fastest execution time was: " + (long)results[1] + "ms");
+            System.out.println("Slowest execution time was: " + (long)results[2] + "ms");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /*public static void benchmarkAll() {
+    public static void benchmarkAll() {
         try (Scanner input = new Scanner(System.in)) {
-            TokenProvider provider = askTokenProvider();
+            TokenProvider provider = askTokenProvider(input);
 
             int maxThreads = askInt("Max number of threads to use:", input);
             int iterations = askInt("Number of iterations to run for:", input);
             int maxWordSize = askInt("Max length of random words:", input);
+            String fileName = askString("File name to use (enter \"?\" for stdout):", input);
+            File output = null;
+            if (!fileName.equals("?")) {
+                output = new File(fileName);
+            }
 
-            for (StringDistance alg : DropDownHandler.ALGS) {
-                for (int i = 1; i <= maxThreads; i *= 2) {
-                    runIterations(true, iterations, "?", maxWordSize, alg, provider, i);
+            for (int i = 0; i < DropDownHandler.ALG_OPTIONS.length; i++) {
+                for (int j = 1; j <= maxThreads; j *= 2) {
+                    runIterations(true, iterations, "?", maxWordSize, DropDownHandler.ALGS[i], 
+                                  DropDownHandler.ALG_OPTIONS[i], provider, j);
                 }
             }
         }
-    }*/
+    }
 }
