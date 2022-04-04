@@ -162,14 +162,20 @@ public class Benchmarking {
             File output = null;
             if (!fileName.equals("?")) {
                 output = new File(fileName);
+                if (output.createNewFile()) {
+
+                }
             }
 
             for (int i = 0; i < DropDownHandler.ALG_OPTIONS.length; i++) {
                 for (int j = 1; j <= maxThreads; j *= 2) {
                     runIterations(true, iterations, "?", maxWordSize, DropDownHandler.ALGS[i], 
                                   DropDownHandler.ALG_OPTIONS[i], provider, j);
+                    
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
