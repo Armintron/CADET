@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import src.AlgRunner;
@@ -40,19 +41,31 @@ public class BestMatchesPanel {
         bestMatchesPanel.add(title, BorderLayout.PAGE_START);
 
         bestMatchesPane = new JTextPane();
+        bestMatchesPane.setEditable(false);
+        JScrollPane scroll = new JScrollPane(bestMatchesPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        bestMatchesPanel.add(scroll, BorderLayout.CENTER);
         bestMatchesPane.setText("Run an algorithm to see the closest words");
-        bestMatchesPanel.add(bestMatchesPane, BorderLayout.CENTER);
         return bestMatchesPanel;
     }
 
     public static void setBestMatchesContents(Iterator iterator){
-            StringBuilder ret = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
+        Document doc = bestMatchesPane.getDocument();
+        try{
+            doc.remove(0, doc.getLength());
+        } catch(BadLocationException e){
+            e.printStackTrace();
+        }
+            for (int i = 0; i < 10; i++) {
             if (!iterator.hasNext()) {
                 break;
             }
-            ret.append(iterator.next().toString() + "\n");
+            try {
+                String ins = iterator.next().toString() + System.getProperty("line.separator");
+                doc.insertString(doc.getLength(), ins, null);
+            } catch(BadLocationException e){
+                e.printStackTrace();
+            }
         }
-        bestMatchesPane.setText(ret.toString());
     }
 }
