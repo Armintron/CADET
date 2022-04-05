@@ -8,17 +8,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import info.debatty.java.stringsimilarity.interfaces.StringDistance;
-import src.AlgRunner;
-import src.Main;
-import src.ResultStats;
-import src.TokenProvider;
-import src.AlgRunner.WordScoreEntry;
 
 public class BestMatchesPanel {
 
