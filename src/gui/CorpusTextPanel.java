@@ -2,16 +2,11 @@ package src.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.AbstractDocument;
 
@@ -100,6 +95,6 @@ public class CorpusTextPanel {
 
         corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
-
+        BestMatchesPanel.setBestMatchesContents(runner.scoreMap.iterator());
     }
 }
