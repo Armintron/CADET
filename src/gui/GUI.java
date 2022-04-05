@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,9 +44,11 @@ public class GUI {
 
         // Bottom Border UI
         frame.add(bottomUI(), BorderLayout.SOUTH);
+        // frame.add(BestMatchesPanel.getBestMatchesPanel(), BorderLayout.CENTER);
 
         // Center Text Box
-        frame.add(CorpusTextPanel.getCorpusTextPanel(), BorderLayout.CENTER);
+        // frame.add(CorpusTextPanel.getCorpusTextPanel(), BorderLayout.CENTER);
+        frame.add(middleUI(), BorderLayout.CENTER);
         frame.add(createTopUI(), BorderLayout.NORTH);
         // frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT); // x and y
 
@@ -94,6 +97,16 @@ public class GUI {
         ret.add(dropDownHandler.getCorpusDropDown());
         ret.add(executeButton);
         ret.add(clearButton);
+
+        return ret;
+    }
+
+    private static JPanel middleUI() {
+        JPanel ret = new JPanel();
+        ret.setLayout(new BoxLayout(ret, BoxLayout.X_AXIS));
+
+        ret.add(CorpusTextPanel.getCorpusTextPanel());
+        ret.add(BestMatchesPanel.getBestMatchesPanel());
 
         return ret;
     }
