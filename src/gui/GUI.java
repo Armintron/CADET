@@ -100,8 +100,8 @@ public class GUI {
         return ret;
     }
 
-    private static JPanel middleUI(){
-        RelativeLayout layout = new RelativeLayout(RelativeLayout.Y_AXIS, 5);
+    private static JPanel middleUI() {
+        RelativeLayout layout = new RelativeLayout(RelativeLayout.X_AXIS, 5);
         layout.setFill(true);
         JPanel ret = new JPanel(layout);
 
