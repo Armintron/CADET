@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -101,12 +102,11 @@ public class GUI {
     }
 
     private static JPanel middleUI() {
-        RelativeLayout layout = new RelativeLayout(RelativeLayout.X_AXIS, 5);
-        layout.setFill(true);
-        JPanel ret = new JPanel(layout);
+        JPanel ret = new JPanel();
+        ret.setLayout(new BoxLayout(ret, BoxLayout.X_AXIS));
 
-        ret.add(CorpusTextPanel.getCorpusTextPanel(), 9.0f);
-        ret.add(BestMatchesPanel.getBestMatchesPanel(), 5.0f);
+        ret.add(CorpusTextPanel.getCorpusTextPanel());
+        ret.add(BestMatchesPanel.getBestMatchesPanel());
 
         return ret;
     }
