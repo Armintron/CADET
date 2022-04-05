@@ -1,5 +1,7 @@
 package src.gui;
 
+import java.util.Arrays;
+
 import javax.swing.JComboBox;
 
 import info.debatty.java.stringsimilarity.Cosine;
@@ -18,6 +20,8 @@ import info.debatty.java.stringsimilarity.SorensenDice;
 import info.debatty.java.stringsimilarity.WeightedLevenshtein;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import src.corpi.CorpusProvider;
+
+import src.Phonetic.Encoder;
 
 public class DropDownHandler {
 
@@ -51,9 +55,22 @@ public class DropDownHandler {
             new RatcliffObershelp(),
             new SorensenDice()
     };
+
+    private final static String[] OPTIONAL_PHONECTIC_ENCODER = 
+    {
+        "NONE",
+        "CaverPhone2",
+        "DoubleMetaphone",
+        "MatchRating",
+        "Metaphone",
+        "Nysiis",
+        "RefinedSoundex",
+        "Soundex"
+    };
     public static String[] CORPI_OPTIONS = { "Bee Movie" };
     protected final JComboBox<String> algComboBox = new JComboBox<>(ALG_OPTIONS);
     protected final JComboBox<String> corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
+    protected final JComboBox<String> phoneticComboBox = new JComboBox<String>(OPTIONAL_PHONECTIC_ENCODER);
 
     public DropDownHandler() {
 
@@ -81,6 +98,11 @@ public class DropDownHandler {
         return corpusComboBox;
     }
 
+    public JComboBox<String> getEncoderDropDown()
+    {
+        return phoneticComboBox;
+    }
+
     /**
      * 
      * @return String Metric Algorithm for selected option on AlgDropDown
@@ -97,6 +119,17 @@ public class DropDownHandler {
      */
     public String getSelectedCorpus() {
         return CorpusProvider.getCorpus(corpusComboBox.getSelectedIndex());
+    }
+
+    /**
+     * 
+     * @return Encoder if selected, else null
+     */
+    public Encoder getSelectedPhonecticEncoder() {
+        String selection = (String)phoneticComboBox.getSelectedItem();
+        if (selection == null || selection.equals("NONE"))
+            return null;
+        return Encoder.valueOf(selection);
     }
 
 }

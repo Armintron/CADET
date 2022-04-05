@@ -10,11 +10,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.AbstractDocument;
 
+import info.debatty.java.stringsimilarity.Damerau;
+import info.debatty.java.stringsimilarity.interfaces.MetricStringDistance;
 import info.debatty.java.stringsimilarity.interfaces.StringDistance;
 import src.AlgRunner;
 import src.Main;
+import src.Phonetic;
 import src.ResultStats;
 import src.TokenProvider;
+import src.AlgRunner.WordScoreEntry;
+import src.Phonetic.Encoder;
 
 public class CorpusTextPanel {
 
@@ -78,8 +83,14 @@ public class CorpusTextPanel {
         String input = GUI.searchWordField.getText();
         StringDistance alg = GUI.dropDownHandler.getSelectedAlg();
         TokenProvider tp = new TokenProvider(corpusTextPane.getText());
-        AlgRunner runner = new AlgRunner(alg, tp, input);
-        Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
+        Encoder enc = GUI.dropDownHandler.getSelectedPhonecticEncoder();
+        Phonetic phon = null;
+        // if an encoder was chosen, assign the phonetic object with it
+        if (enc != null)
+            phon = new Phonetic(enc);
+        AlgRunner runner = new AlgRunner(alg, tp, input, phon);
+        int threadCount = (Integer) GUI.threadCountField.getValue();
+        Main.startAndWaitForThreads(runner, threadCount);
         ResultStats stats = new ResultStats(runner.scoreMap);
 
         corpusDocumentFilter.setResultStats(stats);

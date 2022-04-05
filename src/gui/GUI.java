@@ -10,26 +10,29 @@ import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 public class GUI {
 
     // Class Constants
     private static final int WINDOW_WIDTH = 750;// pixels
     private static final int WINDOW_HEIGHT = 735;// pixels
-    private static final int FIELD_WIDTH = 35;// characters
+    private static final int FIELD_WIDTH = 15;// characters
     private static final int AREA_WIDTH = 40;// characters
     private static final int BUTTON_HORIZONTAL_SPACING = 10;
     private static final int BUTTON_VERTICAL_SPACING = 10;
-    // TODO Add thread picker UI element
-    protected static int NUM_THREADS = 8;
     private String APPLICATION_NAME = "CADET Fuzzy String Search";
     JFrame MAIN_WINDOW;
 
     // Custom Class Instances
     protected static DropDownHandler connectionPanel;
     protected static JTextField searchWordField;
+    protected static JSpinner threadCountField;
     protected static DropDownHandler dropDownHandler = new DropDownHandler();
 
     public GUI() {
@@ -38,7 +41,7 @@ public class GUI {
         JFrame frame = new JFrame(APPLICATION_NAME);
         MAIN_WINDOW = frame;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(650, 600));
+        frame.setMinimumSize(new Dimension(750, 600));
         frame.setResizable(true);
         frame.setLayout(new BorderLayout());
 
@@ -65,7 +68,16 @@ public class GUI {
         searchWordField = new JTextField("Search Word", FIELD_WIDTH);
         searchWordField.setColumns(FIELD_WIDTH);
         ret.add(dropDownHandler.getAlgDropDown());
+        dropDownHandler.getAlgDropDown().setToolTipText("Edit distance algorithm to use");;
         ret.add(searchWordField);
+        searchWordField.setToolTipText("Word to fuzzy-search for");
+        threadCountField = new JSpinner(new SpinnerNumberModel(1, 1, 32, 1));
+        JLabel threadNumTextArea = new JLabel("Thread Count: ");
+        ret.add(threadNumTextArea);
+        threadCountField.setToolTipText("Number of threads to use");
+        ret.add(threadCountField);
+        dropDownHandler.phoneticComboBox.setToolTipText("Phonetic encoder to use (optional)");
+        ret.add(dropDownHandler.phoneticComboBox);
         return ret;
     }
 
@@ -95,6 +107,7 @@ public class GUI {
         });
 
         ret.add(dropDownHandler.getCorpusDropDown());
+        dropDownHandler.getCorpusDropDown().setToolTipText("Corpus to search through");
         ret.add(executeButton);
         ret.add(clearButton);
 
