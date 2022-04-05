@@ -12,19 +12,20 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import src.AlgRunner.WordScoreEntry;
 
 public class BestMatchesPanel {
 
     static JPanel bestMatchesPanel = null;
     protected static JTextPane bestMatchesPane = null;
 
-    public static JPanel getBestMatchesPanel(){
+    public static JPanel getBestMatchesPanel() {
         if (bestMatchesPanel != null)
             return bestMatchesPanel;
         return createBestMatchesPanel();
     }
 
-    private static JPanel createBestMatchesPanel(){
+    private static JPanel createBestMatchesPanel() {
         bestMatchesPanel = new JPanel();
         bestMatchesPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         bestMatchesPanel.setLayout(new BorderLayout());
@@ -36,29 +37,19 @@ public class BestMatchesPanel {
         bestMatchesPane = new JTextPane();
         bestMatchesPane.setEditable(false);
         JScrollPane scroll = new JScrollPane(bestMatchesPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         bestMatchesPanel.add(scroll, BorderLayout.CENTER);
         bestMatchesPane.setText("Run an algorithm to see the closest words");
         return bestMatchesPanel;
     }
 
-    public static void setBestMatchesContents(Iterator iterator){
-        Document doc = bestMatchesPane.getDocument();
-        try{
-            doc.remove(0, doc.getLength());
-        } catch(BadLocationException e){
-            e.printStackTrace();
+    public static void setBestMatchesContents(Iterator<WordScoreEntry> iterator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            WordScoreEntry cur = iterator.next();
+            sb.append(String.format("%d:\t%s\t%.2f%n", i + 1, cur.getWord(), cur.getScore()));
         }
-            for (int i = 0; i < 10; i++) {
-            if (!iterator.hasNext()) {
-                break;
-            }
-            try {
-                String ins = iterator.next().toString() + System.getProperty("line.separator");
-                doc.insertString(doc.getLength(), ins, null);
-            } catch(BadLocationException e){
-                e.printStackTrace();
-            }
-        }
+        bestMatchesPane.setText(sb.toString());
+        return;
     }
 }
