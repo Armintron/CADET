@@ -32,8 +32,8 @@ public class Main {
             e.printStackTrace();
         }*/
 
-        Benchmarking.benchmarkOne();
-
+        //Benchmarking.benchmarkOne();
+        Benchmarking.benchmarkAll();
     }
 
     public static void outputScore(Iterator iterator) {
