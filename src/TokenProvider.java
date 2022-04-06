@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class TokenProvider {
 
+    public String corpusName;
     private List<String> words;
     Iterator<String> wordIterator;
     ConcurrentLinkedQueue<String> wordQueue;
@@ -34,6 +35,7 @@ public class TokenProvider {
             input.close();
             this.words = words;
             this.wordQueue = new ConcurrentLinkedQueue<>(words);
+            this.corpusName = corpus.getName();
 
         } catch (Exception e) {
             e.printStackTrace();
