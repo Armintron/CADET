@@ -2,8 +2,6 @@ package src;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Random;
 import info.debatty.java.stringsimilarity.*;
