@@ -12,37 +12,6 @@ import src.gui.DropDownHandler;
 
 public class Benchmarking {
 
-    public final static String[] ALG_OPTIONS = {
-        "Cosine",
-        "Damerau",
-        "Jaccard",
-        "JaroWinkler",
-        "Levenshtein",
-        "LongestCommonSubsequence",
-        "MetricLCS",
-        "NGram",
-        "NormalizedLevenshtein",
-        "OptimalStringAlignment",
-        "QGram",
-        "RatcliffObershelp",
-        "SorensenDice",
-    };
-    public final static StringDistance[] ALGS = {
-            new Cosine(),
-            new Damerau(),
-            new Jaccard(),
-            new JaroWinkler(),
-            new Levenshtein(),
-            new LongestCommonSubsequence(),
-            new MetricLCS(),
-            new NGram(),
-            new NormalizedLevenshtein(),
-            new OptimalStringAlignment(),
-            new QGram(),
-            new RatcliffObershelp(),
-            new SorensenDice()
-    };
-
     public static final String CORPI_ROOT = "corpi";
 
     private static String[] getListOfFiles() {
