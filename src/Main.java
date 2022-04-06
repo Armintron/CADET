@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Random;
 import info.debatty.java.stringsimilarity.*;
+import src.Phonetic.Encoder;
 
 import src.Benchmarking;
 

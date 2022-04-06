@@ -2,11 +2,6 @@ package src.gui;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,10 +12,9 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.DocumentFilter.FilterBypass;
 
-import src.AlgRunner;
 import src.AlgRunner.WordScoreEntry;
+import src.ResultStats;
 
 final class CorpusDocumentFilter extends DocumentFilter {
     private final StyledDocument styledDocument = CorpusTextPanel.getCorpusTextPane()
@@ -32,9 +26,7 @@ final class CorpusDocumentFilter extends DocumentFilter {
             StyleConstants.Foreground, Color.BLACK);
 
     // TODO Maybe change where this comes from
-    Map<String, Double> wordScoreMap;
-    SortedSet<WordScoreEntry> scoreEntries;
-    private double intervals;
+    ResultStats stats = null;
 
     public static final AttributeSet[] COLORS = {
             createStyleFromColor(new Color(105, 179, 76)),
@@ -46,6 +38,9 @@ final class CorpusDocumentFilter extends DocumentFilter {
     };
     Pattern patterns[];
 
+    /**
+     * Handles String Distance HeatMap Coloring
+     */
     public void handleTextChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -65,58 +60,26 @@ final class CorpusDocumentFilter extends DocumentFilter {
         styledDocument.setCharacterAttributes(0, CorpusTextPanel.getCorpusTextPane().getText().length(),
                 blackAttributeSet, true);
 
-        // TODO Maybe we can implement some more concurrency here?
+        // Maybe we can implement some more concurrency here?
         Matcher matcher = Pattern.compile("\\b\\S*\\b").matcher(CorpusTextPanel.getCorpusTextPane().getText());
         while (matcher.find()) {
             String word;
             try {
                 word = styledDocument.getText(matcher.start(), matcher.end() - matcher.start());
             } catch (BadLocationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 continue;
             }
             word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
-            // Change Color of found Words=
+            // Change Color of found Words
             try {
-                int index = (int) ((wordScoreMap.get(word) - scoreEntries.first().getScore()) / intervals);
+                double score = stats.scoreMap.get(word);
+                Color curColor = new Color((int) Math.min(255, 512 * score), (int) Math.min(255, 512 * (1 - score)), 0);
                 styledDocument.setCharacterAttributes(matcher.start(), matcher.end() - matcher.start(),
-                        COLORS[index], false);
+                        createStyleFromColor(curColor), false);
             } catch (Exception e) {
-                // TODO: handle exception
                 e.printStackTrace();
             }
-        }
-
-    }
-
-    /**
-     * Used to reset the Patterns map holding regex for each word category
-     * 
-     * @param scores
-     * @param abs    The Absolute Values of Z-Score Limit Represented in Map Keys
-     * 
-     */
-    public void resetPatterns(SortedSet<WordScoreEntry> scores) {
-        this.scoreEntries = scores;
-        wordScoreMap = new HashMap<>();
-        double max = scores.last().getScore();
-        double min = scores.first().getScore();
-        intervals = (max - min) / (COLORS.length - 1);
-        ArrayList<WordScoreEntry>[] scoreInvervals = new ArrayList[COLORS.length];
-        patterns = new Pattern[COLORS.length];
-        for (int i = 0; i < scoreInvervals.length; i++) {
-            scoreInvervals[i] = new ArrayList<>();
-        }
-
-        for (WordScoreEntry e : scores) {
-            int index = (int) ((e.getScore() - min) / intervals);
-            scoreInvervals[index].add(e);
-            wordScoreMap.put(e.getWord(), e.getScore());
-        }
-
-        for (int i = 0; i < patterns.length; i++) {
-            patterns[i] = buildPattern(scoreInvervals[i]);
         }
 
     }
@@ -133,5 +96,13 @@ final class CorpusDocumentFilter extends DocumentFilter {
             sb.deleteCharAt(sb.length() - 1);
         }
         return Pattern.compile(sb.toString());
+    }
+
+    /**
+     * 
+     * @param stats stats from current String Distance Algorithm run
+     */
+    public void setResultStats(ResultStats stats) {
+        this.stats = stats;
     }
 }
