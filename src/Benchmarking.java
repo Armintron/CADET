@@ -72,8 +72,9 @@ public class Benchmarking {
     }
 
     private static TokenProvider askTokenProvider(Scanner input) {
-        int corpi_index = askMenuIndex("Corpus to use", getListOfFiles(), input);
-        File corpus = new File(CORPI_ROOT + File.separator + corpi_index);
+        String[] corpi = getListOfFiles();
+        int corpi_index = askMenuIndex("Corpus to use", corpi, input);
+        File corpus = new File(CORPI_ROOT + File.separator + corpi[corpi_index]);
         return new TokenProvider(corpus);
     }
 
