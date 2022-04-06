@@ -47,45 +47,40 @@ public class Benchmarking {
 
     public static final String CORPI_ROOT = "corpi";
 
-    public static String[] getListOfFiles() {
+    private static String[] getListOfFiles() {
         File directory = new File(CORPI_ROOT);
         return directory.list();
     }
 
-    private static char askChar(String request, Scanner input) {
-        System.out.println(request);
-        System.out.print("> ");
-        char ret = input.next().charAt(0);
-        return ret;
-    }
-
     private static int askInt(String request, Scanner input) {
-        System.out.println(request);
+        System.out.println(request + ":");
         System.out.print("> ");
-        int ret = input.nextInt();
-        return ret;
+        return input.nextInt();
     }
 
-    private static TokenProvider askTokenProvider(Scanner input) {
-        System.out.println("Corpus to use (enter number from list below):");
-        String[] corpi = getListOfFiles();
-        for (int i = 1; i <= corpi.length; i++) {
-            System.out.println(i + ". " + corpi[i-1]);
+    private static int askMenuIndex(String request, String[] menu, Scanner input) {
+        System.out.println(request + " (enter number from list below):");
+        for (int i = 1; i <= menu.length; i++) {
+            System.out.println(i + ". " + menu[i-1]);
         }
         System.out.print("> ");
-        File corpus = new File(CORPI_ROOT + File.separator + corpi[input.nextInt() - 1]);
-        TokenProvider provider = new TokenProvider(corpus);
-
-        return provider;
+        return input.nextInt() - 1;
     }
 
     private static String askString(String request, Scanner input) {
-        System.out.println(request);
+        System.out.println(request + ":");
         System.out.print("> ");
-        String ret = input.next();
-        return ret;
+        return input.next();
     }
 
+    private static TokenProvider askTokenProvider(Scanner input) {
+        int corpi_index = askMenuIndex("Corpus to use", getListOfFiles(), input);
+        File corpus = new File(CORPI_ROOT + File.separator + corpi_index);
+        return new TokenProvider(corpus);
+    }
+
+    // On each iteration, generate random search word (optional), spawn threads, run & time algorithm,
+    // despawn threads, and compute stats
     private static double[] runIterations(boolean useRand, int iterations, String searchWord, int maxWordSize,
                                       StringDistance alg, String algName, TokenProvider provider, int numThreads) {
         double runningAverage = 0;
@@ -101,9 +96,9 @@ public class Benchmarking {
                         searchWord += (char)('a' + r.nextInt(26));
                     }
                 }
-                AlgRunner levenRunner = new AlgRunner(alg, provider, searchWord);
+                AlgRunner algRunner = new AlgRunner(alg, provider, searchWord);
                 long startTime = System.currentTimeMillis();
-                Main.startAndWaitForThreads(levenRunner, numThreads);
+                Main.startAndWaitForThreads(algRunner, numThreads);
                 long endTime = System.currentTimeMillis();
                 double t = endTime - startTime;
                 runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
@@ -126,27 +121,17 @@ public class Benchmarking {
     public static void benchmarkOne() {
         try (Scanner input = new Scanner(System.in)) {
             TokenProvider provider = askTokenProvider(input);
-
-            System.out.println("Algorithm to run (enter number from list below):");
-            for (int i = 1; i <= DropDownHandler.ALG_OPTIONS.length; i++) {
-                System.out.println(i + ". " + DropDownHandler.ALG_OPTIONS[i-1]);
-            }
-            System.out.print("> ");
-            if (input.hasNextInt()) {}
-            int algIndex = input.nextInt() - 1;
+            int algIndex = askMenuIndex("Algorithm to run", DropDownHandler.ALG_OPTIONS, input);
             StringDistance alg = DropDownHandler.ALGS[algIndex];
             String algName = DropDownHandler.ALG_OPTIONS[algIndex];
-
-            int numThreads = askInt("Max number of threads to use:", input);
-
-            String searchWord = askString("Search word to use (enter \"?\" for random words on each iteration):", input);
+            int numThreads = askInt("Max number of threads to use", input);
+            String searchWord = askString("Search word to use (enter \"?\" for random words on each iteration)", input);
             boolean useRand = searchWord.equals("?");
             int maxWordSize = -1;
             if (useRand) {
-                maxWordSize = askInt("Max length of random words:", input);
+                maxWordSize = askInt("Max length of random words", input);
             }
-
-            int iterations = askInt("Number of iterations to run for:", input);
+            int iterations = askInt("Number of iterations to run for", input);
 
             double[] results = runIterations(useRand, iterations, searchWord, maxWordSize, alg, algName, provider, numThreads);
             printResults(results);
@@ -158,31 +143,34 @@ public class Benchmarking {
     public static void benchmarkAll() {
         try (Scanner input = new Scanner(System.in)) {
             TokenProvider provider = askTokenProvider(input);
+            int maxThreads = askInt("Max number of threads to use", input);
+            int iterations = askInt("Number of iterations to run for", input);
+            int maxWordSize = askInt("Max length of random words", input);
+            String fileName = askString("File name to use (enter \"?\" for stdout)", input);
 
-            int maxThreads = askInt("Max number of threads to use:", input);
-            int iterations = askInt("Number of iterations to run for:", input);
-            int maxWordSize = askInt("Max length of random words:", input);
-            String fileName = askString("File name to use (enter \"?\" for stdout):", input);
             PrintStream output = null;
             if (!fileName.equals("?")) {
                 output = new PrintStream(fileName);
             }
 
             if (output != null) {
-                // TODO corpus name
+                output.println("Corpus used: " + provider.corpusName);
                 output.println("Iterations used: " + iterations);
                 output.println("Max random word length: " + maxWordSize);
                 output.println();
             }
             System.out.println();
+
             for (int i = 0; i < DropDownHandler.ALG_OPTIONS.length; i++) {
                 StringDistance alg = DropDownHandler.ALGS[i];
                 String algName = DropDownHandler.ALG_OPTIONS[i];
+
                 if (output != null) {
                     output.println(algName);
                     output.println("==================================");
                     output.println("# threads | avg(in ms)    lo    hi");
                 }
+
                 for (int j = 1; j <= maxThreads; j *= 2) {
                     double[] results = runIterations(true, iterations, "?", maxWordSize, alg, 
                                                      algName, provider, j);
@@ -193,11 +181,13 @@ public class Benchmarking {
                         printResults(results);
                     }
                 }
+
                 if (output != null) {
                     output.println("==================================");
                     output.println();
                 }
             }
+
             System.out.println();
             System.out.println("Benchmarking complete!");
         } catch (Exception e) {
