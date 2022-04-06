@@ -88,6 +88,7 @@ public class Benchmarking {
         try (ProgressBar pb = new ProgressBar(algName + ", " + numThreads + " threads -", 
                                               iterations)) {
             for (int i = 1; i <= iterations; i++) {
+                // generate random word
                 if (useRand) {
                     Random r = new Random();
                     searchWord = "";
@@ -101,6 +102,7 @@ public class Benchmarking {
                 Main.startAndWaitForThreads(algRunner, numThreads);
                 long endTime = System.currentTimeMillis();
                 double t = endTime - startTime;
+                // computes running average to avoid potential overflow
                 runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
                 hi = Math.max(hi, t);
                 lo = Math.min(lo, t);
