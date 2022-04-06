@@ -40,7 +40,7 @@ public class DropDownHandler {
             "RatcliffObershelp",
             "SorensenDice",
     };
-    private final static StringDistance[] ALGS = {
+    public final static StringDistance[] ALGS = {
             new Cosine(),
             new Damerau(),
             new Jaccard(),
