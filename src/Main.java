@@ -7,11 +7,11 @@ import info.debatty.java.stringsimilarity.*;
 import src.Phonetic.Encoder;
 
 public class Main {
-
+    // TODO use ResultStat wrapper to normalize scores and send to output score
     public static void main(String[] args) {
 
         try (Scanner input = new Scanner(System.in)) {
-            File inFile = new File("corpi\\beemovie.txt");
+            File inFile = new File("corpi" + File.separator + "beemovie.txt");
             TokenProvider provider = new TokenProvider(inFile);
             Levenshtein l = new Levenshtein();
             String searchWord;
