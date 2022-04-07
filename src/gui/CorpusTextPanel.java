@@ -90,11 +90,13 @@ public class CorpusTextPanel {
             phon = new Phonetic(enc);
         AlgRunner runner = new AlgRunner(alg, tp, input, phon);
         int threadCount = (Integer) GUI.threadCountField.getValue();
-        Main.startAndWaitForThreads(runner, threadCount);
+        long executionTime = Main.startAndWaitForThreads(runner, threadCount);
+
         ResultStats stats = new ResultStats(runner.scoreSet);
 
         corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
         BestMatchesPanel.setBestMatchesContents(runner.scoreSet.iterator());
+        BestMatchesPanel.setExecutionTime(executionTime);
     }
 }

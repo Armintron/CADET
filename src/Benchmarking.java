@@ -66,10 +66,7 @@ public class Benchmarking {
                     }
                 }
                 AlgRunner algRunner = new AlgRunner(alg, provider, searchWord);
-                long startTime = System.currentTimeMillis();
-                Main.startAndWaitForThreads(algRunner, numThreads);
-                long endTime = System.currentTimeMillis();
-                double t = endTime - startTime;
+                double t = Main.startAndWaitForThreads(algRunner, numThreads);
                 // computes running average to avoid potential overflow
                 runningAverage = (i == 1) ? (t) : (runningAverage * ((double)i / (i + 1)) + (t / (i + 1)));
                 hi = Math.max(hi, t);
