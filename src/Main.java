@@ -48,8 +48,16 @@ public class Main {
 
     }
 
-    public static void startAndWaitForThreads(Runnable r, int num) {
+    /**
+     * 
+     * @param r   Runnable Instance
+     * @param num Number of Threads
+     * @return Execution Time in Milis
+     */
+    public static long startAndWaitForThreads(Runnable r, int num) {
         Thread[] threads = new Thread[num];
+
+        long start = System.currentTimeMillis();
         for (int i = 0; i < num; i++) {
             threads[i] = new Thread(r, "" + i);
             threads[i].start();
@@ -61,6 +69,8 @@ public class Main {
                 e.printStackTrace();
             }
         }
+        long dur = System.currentTimeMillis() - start;
+        return dur;
 
     }
 
