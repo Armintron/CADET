@@ -17,7 +17,6 @@ public class ResultStats {
         scores = scoreSet;
         max = scoreSet.last().score;
         min = scoreSet.first().score;
-        System.out.println("Max: " + max + " Min: " + min);
         computeStats();
     }
 
