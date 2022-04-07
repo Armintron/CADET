@@ -18,6 +18,7 @@ public class BestMatchesPanel {
 
     static JPanel bestMatchesPanel = null;
     protected static JTextPane bestMatchesPane = null;
+    static JLabel executionTimeLabel;
 
     public static JPanel getBestMatchesPanel() {
         if (bestMatchesPanel != null)
@@ -40,6 +41,10 @@ public class BestMatchesPanel {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         bestMatchesPanel.add(scroll, BorderLayout.CENTER);
         bestMatchesPane.setText("Run an algorithm to see the closest words");
+
+        // Execution Time
+        executionTimeLabel = new JLabel("Algorithm RunTime: N/A");
+        bestMatchesPanel.add(executionTimeLabel, BorderLayout.SOUTH);
         return bestMatchesPanel;
     }
 
@@ -51,5 +56,9 @@ public class BestMatchesPanel {
         }
         bestMatchesPane.setText(sb.toString());
         return;
+    }
+
+    public static void setExecutionTime(long executionTime) {
+        executionTimeLabel.setText(String.format("Algorithm RunTime: %d ms", executionTime));
     }
 }
