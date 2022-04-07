@@ -1,8 +1,6 @@
 package src;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.SortedSet;
 
 import src.AlgRunner.WordScoreEntry;
@@ -15,10 +13,10 @@ public class ResultStats {
     public Double stdDev = null;
     public double max, min;
 
-    public ResultStats(SortedSet<WordScoreEntry> scoreMap) {
-        scores = scoreMap;
-        max = scoreMap.last().score;
-        min = scoreMap.first().score;
+    public ResultStats(SortedSet<WordScoreEntry> scoreSet) {
+        scores = scoreSet;
+        max = scoreSet.last().score;
+        min = scoreSet.first().score;
         computeStats();
     }
 

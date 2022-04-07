@@ -92,11 +92,11 @@ public class CorpusTextPanel {
         int threadCount = (Integer) GUI.threadCountField.getValue();
         long executionTime = Main.startAndWaitForThreads(runner, threadCount);
 
-        ResultStats stats = new ResultStats(runner.scoreMap);
+        ResultStats stats = new ResultStats(runner.scoreSet);
 
         corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
-        BestMatchesPanel.setBestMatchesContents(runner.scoreMap.iterator());
+        BestMatchesPanel.setBestMatchesContents(runner.scoreSet.iterator());
         BestMatchesPanel.setExecutionTime(executionTime);
     }
 }

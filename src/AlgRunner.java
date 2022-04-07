@@ -1,6 +1,5 @@
 package src;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import info.debatty.java.stringsimilarity.interfaces.*;
@@ -26,8 +25,7 @@ public class AlgRunner implements Runnable {
         }
 
         public String toString() {
-
-            return "Word: " + word + "\t|\tScore: " + score;
+            return String.format("Word : %-15s\t|\tScore: %f", word, score);
         }
 
         @Override
@@ -43,7 +41,7 @@ public class AlgRunner implements Runnable {
 
     }
 
-    public ConcurrentSkipListSet<WordScoreEntry> scoreMap;
+    public ConcurrentSkipListSet<WordScoreEntry> scoreSet;
     StringDistance alg;
     TokenProvider provider;
     Phonetic phonetic;
@@ -62,7 +60,7 @@ public class AlgRunner implements Runnable {
     public AlgRunner(StringDistance msd, TokenProvider provider, String searchWord, Phonetic phonetic)
     {
         Levenshtein l = new Levenshtein();
-        this.scoreMap = new ConcurrentSkipListSet<>();
+        this.scoreSet = new ConcurrentSkipListSet<>();
         this.searchWord = searchWord;
         this.provider = provider;
         this.alg = msd;
@@ -104,7 +102,7 @@ public class AlgRunner implements Runnable {
             }
             // find score for words without encoding
             else score = alg.distance(searchWord, cur);
-            scoreMap.add(new WordScoreEntry(cur, score));
+            scoreSet.add(new WordScoreEntry(cur, score));
 
         }
     }

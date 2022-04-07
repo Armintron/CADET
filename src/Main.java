@@ -5,39 +5,46 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Random;
 import info.debatty.java.stringsimilarity.*;
+import src.AlgRunner.WordScoreEntry;
 import src.Phonetic.Encoder;
 
 import src.Benchmarking;
 
 public class Main {
-
+    // TODO use ResultStat wrapper to normalize scores and send to output score
     public static void main(String[] args) {
 
-        /*try (Scanner input = new Scanner(System.in)) {
-            File inFile = new File("corpi\\beemovie.txt");
-            TokenProvider provider = new TokenProvider(inFile);
-            Levenshtein l = new Levenshtein();
-            String searchWord;
-            do {
-                System.out.println("How many Threads?");
-                int numThread = input.nextInt();
-                System.out.println("Search Word:");
-                searchWord = input.next();
-                AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
-                startAndWaitForThreads(levenRunner, numThread);
-                outputScore(levenRunner.scoreMap.iterator());
-                provider.restartIterator();
-            } while (!searchWord.equalsIgnoreCase("EXIT"));
+        // try (Scanner input = new Scanner(System.in)) {
+        //     File inFile = new File("corpi" + File.separator + "beemovie.txt");
+        //     TokenProvider provider = new TokenProvider(inFile);
+        //     Levenshtein l = new Levenshtein();
+        //     String searchWord;
+        //     do {
+        //         System.out.println("How many Threads? (Enter a value less than 1 to quit)");
+        //         int numThread = input.nextInt();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        //         if (numThread < 1) {
+        //             break;
+        //         }
+
+        //         System.out.println("Search Word:");
+        //         searchWord = input.next();
+        //         AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
+        //         startAndWaitForThreads(levenRunner, numThread);
+        //         ResultStats stats = new ResultStats(levenRunner.scoreSet);
+        //         outputScore(stats.scores.iterator());
+        //         provider.restartIterator();
+        //     } while (true);
+
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
 
         //Benchmarking.benchmarkOne();
         Benchmarking.benchmarkAll();
     }
 
-    public static void outputScore(Iterator iterator) {
+    public static void outputScore(Iterator<WordScoreEntry> iterator) {
         System.out.println("Output:");
         for (int i = 0; i < 10; i++) {
             if (!iterator.hasNext()) {
@@ -45,7 +52,6 @@ public class Main {
             }
             System.out.println(iterator.next().toString());
         }
-
     }
 
     /**
