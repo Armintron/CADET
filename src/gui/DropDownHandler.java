@@ -73,7 +73,6 @@ public class DropDownHandler {
     protected final JComboBox<String> phoneticComboBox = new JComboBox<String>(OPTIONAL_PHONECTIC_ENCODER);
 
     public DropDownHandler() {
-
         corpusComboBox.addActionListener((e) -> {
             int selected = algComboBox.getSelectedIndex();
             CorpusTextPanel.setCorpusTextContents(CorpusProvider.getCorpus(selected));
