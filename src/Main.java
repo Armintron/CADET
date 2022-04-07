@@ -2,8 +2,11 @@ package src;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
+
 import info.debatty.java.stringsimilarity.*;
+import src.AlgRunner.WordScoreEntry;
 import src.Phonetic.Encoder;
 
 public class Main {
@@ -16,23 +19,28 @@ public class Main {
             Levenshtein l = new Levenshtein();
             String searchWord;
             do {
-                System.out.println("How many Threads?");
+                System.out.println("How many Threads? (Enter a value less than 1 to quit)");
                 int numThread = input.nextInt();
+
+                if (numThread < 1) {
+                    break;
+                }
+
                 System.out.println("Search Word:");
                 searchWord = input.next();
                 AlgRunner levenRunner = new AlgRunner(l, provider, searchWord);
                 startAndWaitForThreads(levenRunner, numThread);
-                outputScore(levenRunner.scoreMap.iterator());
+                ResultStats stats = new ResultStats(levenRunner.scoreSet);
+                outputScore(stats.scores.iterator());
                 provider.restartIterator();
-            } while (!searchWord.equalsIgnoreCase("EXIT"));
+            } while (true);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    public static void outputScore(Iterator iterator) {
+    public static void outputScore(Iterator<WordScoreEntry> iterator) {
         System.out.println("Output:");
         for (int i = 0; i < 10; i++) {
             if (!iterator.hasNext()) {
@@ -40,7 +48,6 @@ public class Main {
             }
             System.out.println(iterator.next().toString());
         }
-
     }
 
     public static void startAndWaitForThreads(Runnable r, int num) {

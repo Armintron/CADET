@@ -86,7 +86,7 @@ public class CorpusTextPanel {
         TokenProvider tp = new TokenProvider(corpusTextPane.getText());
         AlgRunner runner = new AlgRunner(alg, tp, input);
         Main.startAndWaitForThreads(runner, GUI.NUM_THREADS);
-        ResultStats stats = new ResultStats(runner.scoreMap);
+        ResultStats stats = new ResultStats(runner.scoreSet);
 
         corpusDocumentFilter.setResultStats(stats);
         corpusDocumentFilter.handleTextChanged();
