@@ -16,6 +16,11 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 public class GUI {
 
@@ -125,7 +130,12 @@ public class GUI {
     }
 
     public static void main(String[] args) {
-        GUI gui = new GUI();
-
+        try {
+            UIManager.setLookAndFeel( new FlatDarculaLaf());
+            GUI gui = new GUI();
+        } catch (Exception e) {
+            System.out.println("Couldn't start GUI");
+            e.printStackTrace();
+        }
     }
 }
