@@ -2,7 +2,6 @@ package src;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Scanner;
 
 import info.debatty.java.stringsimilarity.*;

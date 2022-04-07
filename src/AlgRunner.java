@@ -1,6 +1,5 @@
 package src;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import info.debatty.java.stringsimilarity.interfaces.*;
@@ -26,8 +25,7 @@ public class AlgRunner implements Runnable {
         }
 
         public String toString() {
-
-            return "Word: " + word + "\t|\tScore: " + score;
+            return String.format("Word : %-15s\t|\tScore: %f", word, score);
         }
 
         @Override
