@@ -67,12 +67,14 @@ public class DropDownHandler {
             "Soundex"
     };
     public static String[] CORPI_OPTIONS = { "All Words", "Bee Movie", "Dracula", "Edgar Allan Poe", "Frankenstein",
-            "Mobydick", "Winnne the Pooh" };
+            "Mobydick", "Winnie the Pooh" };
     protected final JComboBox<String> algComboBox = new JComboBox<>(ALG_OPTIONS);
     protected final JComboBox<String> corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
     protected final JComboBox<String> phoneticComboBox = new JComboBox<String>(OPTIONAL_PHONECTIC_ENCODER);
 
     public DropDownHandler() {
+        // Start off with Bee movie instead of all words saves a lot of time
+        corpusComboBox.setSelectedIndex(1);
         corpusComboBox.addActionListener((e) -> {
             CorpusTextPanel.setCorpusTextContents(CorpusProvider.getCorpus(corpusComboBox.getSelectedIndex()));
 

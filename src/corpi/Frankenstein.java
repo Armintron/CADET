@@ -1,7 +1,12 @@
 package src.corpi;
 
 public class Frankenstein {
-    public static String CORPUS = """
+
+    public static String getCorpus() {
+        return CORPUS;
+    }
+
+    private static String CORPUS = """
             Letter 1
 
             _To Mrs. Saville, England._
