@@ -66,7 +66,7 @@ public class DropDownHandler {
             "RefinedSoundex",
             "Soundex"
     };
-    public static String[] CORPI_OPTIONS = { "Bee Movie", "All Words", "Dracula", "Edgar Allan Poe", "Frankenstein",
+    public static String[] CORPI_OPTIONS = { "All Words", "Bee Movie", "Dracula", "Edgar Allan Poe", "Frankenstein",
             "Mobydick", "Winnne the Pooh" };
     protected final JComboBox<String> algComboBox = new JComboBox<>(ALG_OPTIONS);
     protected final JComboBox<String> corpusComboBox = new JComboBox<>(CORPI_OPTIONS);
