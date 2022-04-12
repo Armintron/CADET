@@ -27,6 +27,8 @@ Removes the compiled files from the directory
 
 ***Replace*** `[OPTION]` ***with either*** `Main` ***or*** `GUI` ***to compile / run the benchmarking suite / GUI, respectively.***
 
+To compile:
+
 Linux:`javac -cp ".:./lib/*" src/[OPTION].java`<br>
 Windows:`javac -cp ".;./lib/*" src/[OPTION].java`
 
